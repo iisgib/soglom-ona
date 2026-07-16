@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Соғлом Она — Sog'lom Ona</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Alice&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF4EC;        /* warm ivory with a rose note */
+  --card:#FFFFFF;
+  --anor:#A62B45;         /* pomegranate — primary */
+  --anor-soft:#F6E3E7;
+  --rishtan:#2E7E8C;      /* Rishtan ceramic teal — secondary */
+  --rishtan-soft:#E2EFF1;
+  --saffron:#E8A24C;      /* saffron — accent / progress */
+  --saffron-soft:#FBEEDB;
+  --ink:#3B2530;          /* deep aubergine ink */
+  --ink-60:#6E5A63;
+  --line:#EBDDD4;
+  --ok:#5E9A6B;
+  --warn:#C9822E;
+  --radius:20px;
+  --shadow:0 2px 12px rgba(59,37,48,.07);
+  font-size:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Nunito',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(232,162,76,.10), transparent 40%),
+    radial-gradient(circle at 88% 92%, rgba(46,126,140,.08), transparent 45%),
+    var(--paper);
+  color:var(--ink);
+  display:flex;justify-content:center;
+  -webkit-font-smoothing:antialiased;
+}
+#app{
+  width:100%;max-width:430px;min-height:100dvh;
+  display:flex;flex-direction:column;
+  background:var(--paper);
+  box-shadow:0 0 60px rgba(59,37,48,.08);
+  position:relative;
+}
+/* ---------- header ---------- */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 10px;
+}
+.logo{display:flex;align-items:center;gap:10px}
+.logo svg{width:34px;height:34px;flex:none}
+.logo h1{font-family:'Alice',serif;font-size:1.25rem;font-weight:400;letter-spacing:.01em}
+.logo span{display:block;font-family:'Nunito';font-size:.68rem;color:var(--ink-60);letter-spacing:.08em;text-transform:uppercase}
+.lang{
+  display:flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff;
+}
+.lang button{
+  border:0;background:transparent;padding:6px 12px;font:700 .78rem 'Nunito';
+  color:var(--ink-60);cursor:pointer;
+}
+.lang button.on{background:var(--anor);color:#fff}
+/* ---------- layout ---------- */
+main{flex:1;overflow-y:auto;padding:6px 20px 96px;scroll-behavior:smooth}
+.view{display:none;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}}
+h2{font-family:'Alice',serif;font-weight:400;font-size:1.45rem;margin:14px 0 4px}
+.sub{color:var(--ink-60);font-size:.9rem;margin-bottom:16px}
+.card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:18px;margin-bottom:14px;border:1px solid rgba(235,221,212,.6);
+}
+.card h3{font-family:'Alice',serif;font-weight:400;font-size:1.08rem;margin-bottom:8px}
+.eyebrow{font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rishtan);margin-bottom:6px}
+.suzani{display:flex;gap:6px;justify-content:center;margin:4px 0 12px}
+.suzani i{width:5px;height:5px;border-radius:50%;background:var(--saffron);opacity:.7}
+.suzani i:nth-child(odd){background:var(--anor);opacity:.5}
+/* ---------- buttons ---------- */
+.btn{
+  display:block;width:100%;border:0;border-radius:16px;cursor:pointer;
+  font:800 1rem 'Nunito';padding:16px;text-align:center;transition:transform .08s ease;
+}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible,.chip:focus-visible,.tab:focus-visible,button:focus-visible{outline:3px solid var(--rishtan);outline-offset:2px}
+.btn.primary{background:var(--anor);color:#fff}
+.btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn.teal{background:var(--rishtan);color:#fff}
+.btn+.btn{margin-top:10px}
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+.chip{
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;
+  padding:10px 16px;font:700 .9rem 'Nunito';color:var(--ink);cursor:pointer;
+}
+.chip.on{background:var(--anor);border-color:var(--anor);color:#fff}
+.chip.teal.on{background:var(--rishtan);border-color:var(--rishtan)}
+label.q{display:block;font-weight:700;font-size:.95rem;margin:16px 0 4px}
+input[type=text],input[type=number],input[type=date],select{
+  width:100%;padding:14px;border:1.5px solid var(--line);border-radius:14px;
+  font:600 1rem 'Nunito';background:#fff;color:var(--ink);
+}
+/* ---------- blossom progress (signature) ---------- */
+.blossom-wrap{display:flex;align-items:center;gap:18px}
+.blossom{width:118px;height:118px;flex:none}
+.blossom .petal{fill:var(--anor-soft);transition:fill .6s ease}
+.blossom .petal.grown{fill:var(--anor)}
+.blossom .heart{fill:var(--saffron)}
+.week-big{font-family:'Alice',serif;font-size:2rem;line-height:1}
+.week-note{color:var(--ink-60);font-size:.88rem;margin-top:4px}
+.bar{height:10px;border-radius:99px;background:var(--anor-soft);margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--saffron),var(--anor));transition:width .6s ease}
+/* ---------- checklist ---------- */
+.task{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+.task:last-child{border-bottom:0}
+.task button.tick{
+  width:28px;height:28px;flex:none;border-radius:9px;border:2px solid var(--line);
+  background:#fff;cursor:pointer;display:grid;place-items:center;color:transparent;font-size:15px;
+}
+.task.done button.tick{background:var(--ok);border-color:var(--ok);color:#fff}
+.task.done .t-text{text-decoration:line-through;color:var(--ink-60)}
+.t-text{font-weight:600;font-size:.95rem;line-height:1.35}
+/* ---------- timeline ---------- */
+.visit{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.visit:last-child{border-bottom:0}
+.visit .wk{
+  flex:none;width:52px;height:52px;border-radius:14px;background:var(--rishtan-soft);
+  display:grid;place-items:center;font:800 .8rem 'Nunito';color:var(--rishtan);text-align:center;line-height:1.1;
+}
+.visit.next .wk{background:var(--rishtan);color:#fff}
+.visit.past{opacity:.45}
+.visit p{font-size:.9rem;font-weight:600;align-self:center}
+.badge{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.06em;color:#fff;background:var(--rishtan);border-radius:99px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+/* ---------- notes / flags ---------- */
+.note{border-radius:16px;padding:14px 16px;font-size:.9rem;line-height:1.45;font-weight:600;margin-bottom:14px}
+.note.calm{background:var(--rishtan-soft);color:#1F5560}
+.note.soft{background:var(--saffron-soft);color:#7A5210}
+.note.rose{background:var(--anor-soft);color:#7C2136}
+.note b{display:block;font-family:'Alice',serif;font-weight:400;font-size:1rem;margin-bottom:4px}
+/* ---------- emoji scale ---------- */
+.emojis{display:flex;justify-content:space-between;margin:8px 0}
+.emojis button{
+  font-size:1.7rem;background:#fff;border:2px solid transparent;border-radius:14px;
+  padding:8px 10px;cursor:pointer;filter:grayscale(.5);transition:.15s;
+}
+.emojis button.on{border-color:var(--anor);filter:none;transform:scale(1.12)}
+/* ---------- vaccines / rows ---------- */
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line)}
+.row:last-child{border-bottom:0}
+.row .r-main{font-weight:700;font-size:.92rem}
+.row .r-sub{font-size:.78rem;color:var(--ink-60)}
+.mini{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 14px;font:800 .8rem 'Nunito';cursor:pointer;color:var(--ink);flex:none}
+.mini.done{background:var(--ok);border-color:var(--ok);color:#fff}
+/* ---------- result dial ---------- */
+.dial{text-align:center;padding:8px 0 4px}
+.dial .face{font-size:3rem}
+.dial .verdict{font-family:'Alice',serif;font-size:1.2rem;margin-top:6px}
+/* ---------- bottom nav ---------- */
+nav{
+  position:absolute;bottom:0;left:0;right:0;background:#fff;
+  border-top:1px solid var(--line);display:flex;
+  padding:8px 6px calc(10px + env(safe-area-inset-bottom));
+}
+.tab{
+  flex:1;border:0;background:none;cursor:pointer;color:var(--ink-60);
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font:700 .62rem 'Nunito';padding:4px 0;border-radius:12px;
+}
+.tab svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--anor)}
+.hide{display:none!important}
+.stat2{display:flex;gap:10px}
+.stat2 .card{flex:1;text-align:center;margin-bottom:0}
+.stat2 .num{font-family:'Alice',serif;font-size:1.6rem}
+.stat2 .lbl{font-size:.72rem;color:var(--ink-60);font-weight:700}
+.modcard{display:flex;align-items:center;gap:14px;cursor:pointer}
+.modcard .ic{width:46px;height:46px;flex:none;border-radius:14px;display:grid;place-items:center;font-size:1.35rem}
+.modcard p{font-size:.8rem;color:var(--ink-60);font-weight:600}
+.disclaimer{font-size:.72rem;color:var(--ink-60);text-align:center;padding:6px 12px 0;line-height:1.4}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="22" r="13" fill="#A62B45"/>
+        <path d="M20 9c-2 0-3.5-2-3-4 0 0 2-1 3.5-1S24 5 24 5c.5 2-2 4-4 4z" fill="#2E7E8C"/>
+        <circle cx="15" cy="20" r="2.3" fill="#FBF4EC" opacity=".9"/>
+        <circle cx="22" cy="17" r="2.3" fill="#FBF4EC" opacity=".9"/>
+        <circle cx="25" cy="24" r="2.3" fill="#FBF4EC" opacity=".9"/>
+        <circle cx="18" cy="26" r="2.3" fill="#FBF4EC" opacity=".9"/>
+      </svg>
+      <h1 data-i18n="app">Соғлом Она<span data-i18n="tag">от беременности до 3 лет</span></h1>
+    </div>
+    <div class="lang" role="group" aria-label="Til / Язык">
+      <button id="langRu" class="on" onclick="setLang('ru')">РУ</button>
+      <button id="langUz" onclick="setLang('uz')">UZ</button>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============ ONBOARDING ============ -->
+    <section class="view" id="v-onb">
+      <div class="suzani"><i></i><i></i><i></i><i></i><i></i></div>
+      <h2 data-i18n="onbTitle">Здравствуйте! Давайте познакомимся</h2>
+      <p class="sub" data-i18n="onbSub">Пара минут — и приложение подстроится под вас. Это не диагностика, а забота и подсказки.</p>
+
+      <div class="card">
+        <label class="q" data-i18n="qName">Как к вам обращаться?</label>
+        <input type="text" id="fName" placeholder="Малика" autocomplete="off">
+
+        <label class="q" data-i18n="qStage">Какой у вас сейчас этап?</label>
+        <div class="chiprow" id="stageRow">
+          <button class="chip on" data-v="preg" data-i18n="stPreg">Я беременна</button>
+          <button class="chip" data-v="baby" data-i18n="stBaby">Малыш уже родился</button>
+        </div>
+
+        <div id="pregQ">
+          <label class="q" data-i18n="qWeek">Какая неделя беременности?</label>
+          <input type="number" id="fWeek" min="1" max="42" value="12" inputmode="numeric">
+        </div>
+        <div id="babyQ" class="hide">
+          <label class="q" data-i18n="qBabyM">Сколько месяцев малышу?</label>
+          <input type="number" id="fBabyM" min="0" max="36" value="2" inputmode="numeric">
+        </div>
+
+        <label class="q" data-i18n="qAge">Ваш возраст</label>
+        <input type="number" id="fAge" min="14" max="55" value="26" inputmode="numeric">
+
+        <label class="q" data-i18n="qRisk">Отметьте, что относится к вам</label>
+        <div class="chiprow" id="riskRow">
+          <button class="chip teal" data-k="first" data-i18n="rFirst">Первая беременность</button>
+          <button class="chip teal" data-k="chronic" data-i18n="rChronic">Хронические болезни (давление, диабет, анемия)</button>
+          <button class="chip teal" data-k="smoke" data-i18n="rSmoke">Курение / курят дома</button>
+          <button class="chip teal" data-k="hered" data-i18n="rHered">Осложнения у близких родственниц</button>
+          <button class="chip teal" data-k="prev" data-i18n="rPrev">Осложнения в прошлую беременность</button>
+        </div>
+      </div>
+      <button class="btn primary" onclick="finishOnb()" data-i18n="onbGo">Начать</button>
+      <p class="disclaimer" data-i18n="disc">Приложение не ставит диагнозы и не заменяет врача. Оно помогает вовремя заметить и вовремя спросить.</p>
+    </section>
+
+    <!-- ============ HOME ============ -->
+    <section class="view" id="v-home">
+      <h2 id="homeHello">Здравствуйте!</h2>
+      <p class="sub" id="homeSub"></p>
+      <div id="homeTop"></div>
+      <div id="homeMods"></div>
+    </section>
+
+    <!-- ============ PREGNANCY ============ -->
+    <section class="view" id="v-preg">
+      <h2 data-i18n="mPreg">Беременность</h2>
+      <p class="sub" data-i18n="mPregSub">Ваш персональный путь по неделям</p>
+
+      <div class="card">
+        <div class="blossom-wrap">
+          <svg class="blossom" id="blossom" viewBox="0 0 120 120" aria-hidden="true">
+            <g id="petals"></g>
+            <circle class="heart" cx="60" cy="60" r="13"/>
+          </svg>
+          <div>
+            <div class="week-big"><span id="wkNum">12</span> <span style="font-size:1rem" data-i18n="wkWord">неделя</span></div>
+            <div class="week-note" id="wkFruit"></div>
+            <div class="bar"><i id="wkBar" style="width:30%"></i></div>
+            <div class="week-note" id="wkPct"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="riskCard"></div>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="aiWeek">Подсказки этой недели</div>
+        <h3 id="clTitle"></h3>
+        <div id="checklist"></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="visitsEB">Визиты к врачу</div>
+        <h3 data-i18n="visitsT">План осмотров</h3>
+        <div id="visits"></div>
+      </div>
+      <p class="disclaimer" data-i18n="disc2">График основан на рекомендациях ВОЗ. Точный план всегда определяет ваш врач.</p>
+    </section>
+
+    <!-- ============ FIRST YEAR ============ -->
+    <section class="view" id="v-baby">
+      <h2 data-i18n="mBaby">Первый год</h2>
+      <p class="sub" data-i18n="mBabySub">Прививки, рост и вехи развития</p>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="vacEB">Национальный календарь (упрощённо)</div>
+        <h3 data-i18n="vacT">Прививки</h3>
+        <div id="vacList"></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="growEB">Рост и вес</div>
+        <h3 data-i18n="growT">Измерения</h3>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="gW" placeholder="кг" step="0.1" inputmode="decimal">
+          <input type="number" id="gH" placeholder="см" inputmode="numeric">
+          <button class="mini" style="align-self:stretch" onclick="addGrowth()" data-i18n="add">Записать</button>
+        </div>
+        <div id="growList" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="msEB">Вопрос недели</div>
+        <h3 id="msQ"></h3>
+        <div class="chiprow">
+          <button class="chip" onclick="answerMs('yes')" data-i18n="yes">Да</button>
+          <button class="chip" onclick="answerMs('notyet')" data-i18n="notyet">Пока нет</button>
+        </div>
+        <div id="msNote"></div>
+      </div>
+    </section>
+
+    <!-- ============ SCREENING ============ -->
+    <section class="view" id="v-scr">
+      <h2 data-i18n="mScr">Ранний скрининг</h2>
+      <p class="sub" data-i18n="mScrSub">Короткая проверка развития — 8 вопросов, 2 минуты</p>
+
+      <div class="card" id="scrStart">
+        <h3 data-i18n="scrAge">Возраст малыша</h3>
+        <div class="chiprow" id="scrAges">
+          <button class="chip" data-a="12">12 <span data-i18n="mo">мес</span></button>
+          <button class="chip" data-a="18">18 <span data-i18n="mo">мес</span></button>
+          <button class="chip" data-a="24">24 <span data-i18n="mo">мес</span></button>
+          <button class="chip" data-a="36">36 <span data-i18n="mo">мес</span></button>
+        </div>
+        <button class="btn teal" style="margin-top:12px" onclick="startScr()" data-i18n="scrGo">Начать проверку</button>
+      </div>
+
+      <div class="card hide" id="scrQz">
+        <div class="eyebrow"><span data-i18n="scrQ">Вопрос</span> <span id="scrN">1</span>/8</div>
+        <h3 id="scrQText" style="font-size:1.15rem;line-height:1.4"></h3>
+        <div class="chiprow" style="margin-top:14px">
+          <button class="chip" onclick="scrAns(0)" data-i18n="yes">Да</button>
+          <button class="chip" onclick="scrAns(1)" data-i18n="notyet">Пока нет</button>
+        </div>
+      </div>
+
+      <div id="scrResult"></div>
+      <p class="disclaimer" data-i18n="disc3">Скрининг не является диагнозом. Он лишь помогает решить, нужна ли консультация специалиста.</p>
+    </section>
+
+    <!-- ============ MAMA ============ -->
+    <section class="view" id="v-mama">
+      <h2 data-i18n="mMama">Мама</h2>
+      <p class="sub" data-i18n="mMamaSub">Ваше состояние так же важно, как здоровье малыша</p>
+
+      <div id="mamaSupport"></div>
+
+      <div class="card" id="ciCard">
+        <div class="eyebrow" data-i18n="ciEB">Еженедельный чек-ин</div>
+        <h3 data-i18n="ciMood">Какое у вас настроение в последние дни?</h3>
+        <div class="emojis" id="ciMoodRow">
+          <button data-v="1">😞</button><button data-v="2">😔</button><button data-v="3">😐</button><button data-v="4">🙂</button><button data-v="5">😊</button>
+        </div>
+        <h3 data-i18n="ciSleep">Удаётся ли высыпаться?</h3>
+        <div class="chiprow" id="ciSleepRow">
+          <button class="chip" data-v="1" data-i18n="slNo">Почти нет</button>
+          <button class="chip" data-v="2" data-i18n="slSome">Иногда</button>
+          <button class="chip" data-v="3" data-i18n="slYes">Да</button>
+        </div>
+        <h3 data-i18n="ciBody">Как физическое самочувствие?</h3>
+        <div class="chiprow" id="ciBodyRow">
+          <button class="chip" data-v="1" data-i18n="bBad">Тяжело</button>
+          <button class="chip" data-v="2" data-i18n="bMid">Средне</button>
+          <button class="chip" data-v="3" data-i18n="bOk">Хорошо</button>
+        </div>
+        <button class="btn primary" style="margin-top:14px" onclick="saveCheckin()" data-i18n="ciSave">Сохранить чек-ин</button>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow" data-i18n="feedEB">Кормление сегодня</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><span class="week-big" id="feedN">0</span> <span class="week-note" data-i18n="feedT">раз</span></div>
+          <button class="mini" onclick="addFeed()" data-i18n="feedAdd">+ Отметить</button>
+        </div>
+        <div id="feedList" class="week-note" style="margin-top:6px"></div>
+      </div>
+
+      <div class="card" id="ciHist"></div>
+    </section>
+
+  </main>
+
+  <nav>
+    <button class="tab" data-v="home" onclick="go('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg>
+      <span data-i18n="nHome">Главная</span>
+    </button>
+    <button class="tab" data-v="preg" onclick="go('preg')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="6" r="2.6"/><path d="M12 9.5c-2 0-3 1.6-3 3.6 0 3 2 3.6 2 6.9h4c0-2 2-3.2 2-6 0-2.6-2-4.5-5-4.5z"/></svg>
+      <span data-i18n="nPreg">Беременность</span>
+    </button>
+    <button class="tab" data-v="baby" onclick="go('baby')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 6c-1.5-.5-2-2-1-3.5"/><circle cx="9.5" cy="12.5" r=".6" fill="currentColor"/><circle cx="14.5" cy="12.5" r=".6" fill="currentColor"/><path d="M9.5 15.5c1.5 1.2 3.5 1.2 5 0"/></svg>
+      <span data-i18n="nBaby">Первый год</span>
+    </button>
+    <button class="tab" data-v="scr" onclick="go('scr')">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+      <span data-i18n="nScr">Скрининг</span>
+    </button>
+    <button class="tab" data-v="mama" onclick="go('mama')">
+      <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-9.5A4.5 4.5 0 0 1 12 8a4.5 4.5 0 0 1 7 2.5C19 15.5 12 20 12 20z"/></svg>
+      <span data-i18n="nMama">Мама</span>
+    </button>
+  </nav>
+</div>
+
+<script>
+/* =============================================================
+   Соғлом Она — MVP prototype
+   Rule-based "AI" core (LLM API is plugged in production; every
+   generator below has the same contract as the LLM prompt).
+   All data lives in localStorage. RU / UZ-latin i18n.
+============================================================= */
+
+/* ---------------- i18n ---------------- */
+const T = {
+ru:{
+ app:"Соғлом Она", tag:"от беременности до 3 лет",
+ onbTitle:"Здравствуйте! Давайте познакомимся",
+ onbSub:"Пара минут — и приложение подстроится под вас. Это не диагностика, а забота и подсказки.",
+ qName:"Как к вам обращаться?", qStage:"Какой у вас сейчас этап?",
+ stPreg:"Я беременна", stBaby:"Малыш уже родился",
+ qWeek:"Какая неделя беременности?", qBabyM:"Сколько месяцев малышу?",
+ qAge:"Ваш возраст", qRisk:"Отметьте, что относится к вам",
+ rFirst:"Первая беременность", rChronic:"Хронические болезни (давление, диабет, анемия)",
+ rSmoke:"Курение / курят дома", rHered:"Осложнения у близких родственниц", rPrev:"Осложнения в прошлую беременность",
+ onbGo:"Начать",
+ disc:"Приложение не ставит диагнозы и не заменяет врача. Оно помогает вовремя заметить и вовремя спросить.",
+ disc2:"График основан на рекомендациях ВОЗ. Точный план всегда определяет ваш врач.",
+ disc3:"Скрининг не является диагнозом. Он лишь помогает решить, нужна ли консультация специалиста.",
+ nHome:"Главная", nPreg:"Беременность", nBaby:"Первый год", nScr:"Скрининг", nMama:"Мама",
+ mPreg:"Беременность", mPregSub:"Ваш персональный путь по неделям",
+ wkWord:"неделя", aiWeek:"Подсказки этой недели", visitsEB:"Визиты к врачу", visitsT:"План осмотров",
+ mBaby:"Первый год", mBabySub:"Прививки, рост и вехи развития",
+ vacEB:"Национальный календарь (упрощённо)", vacT:"Прививки", growEB:"Рост и вес", growT:"Измерения",
+ add:"Записать", msEB:"Вопрос недели", yes:"Да", notyet:"Пока нет",
+ mScr:"Ранний скрининг", mScrSub:"Короткая проверка развития — 8 вопросов, 2 минуты",
+ scrAge:"Возраст малыша", mo:"мес", scrGo:"Начать проверку", scrQ:"Вопрос",
+ mMama:"Мама", mMamaSub:"Ваше состояние так же важно, как здоровье малыша",
+ ciEB:"Еженедельный чек-ин", ciMood:"Какое у вас настроение в последние дни?",
+ ciSleep:"Удаётся ли высыпаться?", ciBody:"Как физическое самочувствие?",
+ slNo:"Почти нет", slSome:"Иногда", slYes:"Да", bBad:"Тяжело", bMid:"Средне", bOk:"Хорошо",
+ ciSave:"Сохранить чек-ин", feedEB:"Кормление сегодня", feedT:"раз", feedAdd:"+ Отметить",
+ hello:n=>`Здравствуйте, ${n}!`,
+ homeSubPreg:w=>`Идёт ${w}-я неделя — вы большая молодец, что заботитесь о себе.`,
+ homeSubBaby:m=>`Малышу ${m} мес. Каждый ваш вопрос сейчас — вклад в его здоровье.`,
+ fruit:f=>`Малыш сейчас размером с ${f}`,
+ pct:p=>`Пройдено ${p}% пути`,
+ trim:t=>`${t}-й триместр · привычки недели`,
+ nextV:"следующий", wkShort:"нед",
+ modPreg:["Беременность","чек-лист недели и визиты"],
+ modBaby:["Первый год","прививки и вехи"],
+ modScr:["Скрининг","проверка развития"],
+ modMama:["Мама","чек-ин и поддержка"],
+ statWeek:"неделя", statDone:"дел выполнено", statMonth:"месяцев малышу", statVac:"прививок отмечено",
+ riskLow:["Всё спокойно","Ваша анкета не показала особых факторов риска. Продолжайте регулярные визиты — этого достаточно."],
+ riskMid:["Стоит обсудить с врачом","В вашей анкете есть моменты, о которых полезно сказать врачу на ближайшем плановом визите. Это не повод для тревоги — просто пусть врач знает."],
+ riskHigh:["Покажитесь врачу пораньше","Сочетание факторов в анкете — повод не ждать планового визита, а записаться к врачу в ближайшие дни. Чаще всего всё в порядке, но лучше убедиться."],
+ visitTxt:{v12:"Постановка на учёт, первые анализы",v18:"Скрининг-УЗИ, оценка развития",v26:"Осмотр, анализ крови (сахар, гемоглобин)",v30:"Осмотр, оформление декрета",v34:"Осмотр, положение малыша",v36:"УЗИ, план родов",v38:"Осмотр",v40:"Осмотр, готовность к родам"},
+ msNoteOk:"Отлично! Это соответствует возрасту.",
+ msNoteWait:"Ничего страшного — у каждого малыша свой темп. Спросим снова через неделю; если навык не появится, мягко напомним обсудить с педиатром.",
+ scrOk:["Всё в порядке","Ответы соответствуют возрасту. Следующая проверка — по расписанию."],
+ scrWatch:["Понаблюдайте","Один-два навыка пока не проявились — это часто вариант нормы. Повторите проверку через 2–3 недели и упоминайте это педиатру."],
+ scrSee:["Стоит проконсультироваться","Несколько важных навыков пока не проявились. Это не диагноз — но именно ранняя консультация даёт лучший результат. Специалисты рядом:"],
+ specs:["Республиканский центр раннего вмешательства — Ташкент, Юнусабад","Детский невролог, поликлиника №12 — Чиланзар","Логопед-дефектолог, центр «Умид» — Мирзо-Улугбек"],
+ supportCard:["Мы рядом","Последние чек-ины показывают, что вам может быть тяжело. Это случается со многими мамами — и это лечится разговором и поддержкой. Пожалуйста, поделитесь с близкими и врачом. Телефон доверия: 1146."],
+ ciThanks:"Чек-ин сохранён. Спасибо, что заботитесь о себе 💛",
+ histT:"Ваши чек-ины", histEmpty:"Пока нет чек-инов — первый можно сделать прямо сейчас.",
+ vacDone:"Есть", vacNo:"Отметить",
+ fruits:{6:"горошину",10:"клубнику",14:"лимон",18:"гранат",22:"маленькую дыню",27:"кочан капусты",32:"джиду (крупную)",36:"лепёшку нон",42:"арбузик"},
+ growEmpty:"Записей пока нет", kg:"кг", cm:"см",
+ alreadyCi:"Чек-ин на этой неделе уже сохранён. Возвращайтесь через несколько дней 💛",
+ mood:"настроение", sleep:"сон", body:"самочувствие"
+},
+uz:{
+ app:"Sog'lom Ona", tag:"homiladorlikdan 3 yoshgacha",
+ onbTitle:"Assalomu alaykum! Keling, tanishamiz",
+ onbSub:"Bir-ikki daqiqa — va ilova sizga moslashadi. Bu tashxis emas, balki g'amxo'rlik va maslahatlar.",
+ qName:"Sizga qanday murojaat qilaylik?", qStage:"Hozir qaysi bosqichdasiz?",
+ stPreg:"Men homiladorman", stBaby:"Chaqaloq tug'ilgan",
+ qWeek:"Homiladorlikning nechanchi haftasi?", qBabyM:"Chaqaloq necha oylik?",
+ qAge:"Yoshingiz", qRisk:"Sizga tegishlilarini belgilang",
+ rFirst:"Birinchi homiladorlik", rChronic:"Surunkali kasalliklar (bosim, diabet, anemiya)",
+ rSmoke:"Chekish / uyda chekishadi", rHered:"Yaqin qarindoshlarda asoratlar", rPrev:"O'tgan homiladorlikda asoratlar",
+ onbGo:"Boshlash",
+ disc:"Ilova tashxis qo'ymaydi va shifokor o'rnini bosmaydi. U o'z vaqtida sezish va so'rashga yordam beradi.",
+ disc2:"Jadval JSST tavsiyalariga asoslangan. Aniq rejani doim shifokoringiz belgilaydi.",
+ disc3:"Skrining tashxis emas. U mutaxassis maslahati kerakmi-yo'qligini hal qilishga yordam beradi, xolos.",
+ nHome:"Bosh sahifa", nPreg:"Homiladorlik", nBaby:"Birinchi yil", nScr:"Skrining", nMama:"Ona",
+ mPreg:"Homiladorlik", mPregSub:"Haftalar bo'yicha shaxsiy yo'lingiz",
+ wkWord:"hafta", aiWeek:"Shu hafta maslahatlari", visitsEB:"Shifokor qabullari", visitsT:"Ko'riklar rejasi",
+ mBaby:"Birinchi yil", mBabySub:"Emlashlar, o'sish va rivojlanish bosqichlari",
+ vacEB:"Milliy taqvim (soddalashtirilgan)", vacT:"Emlashlar", growEB:"Bo'y va vazn", growT:"O'lchovlar",
+ add:"Yozish", msEB:"Hafta savoli", yes:"Ha", notyet:"Hali yo'q",
+ mScr:"Erta skrining", mScrSub:"Rivojlanishning qisqa tekshiruvi — 8 savol, 2 daqiqa",
+ scrAge:"Chaqaloq yoshi", mo:"oy", scrGo:"Tekshiruvni boshlash", scrQ:"Savol",
+ mMama:"Ona", mMamaSub:"Sizning holatingiz chaqaloq salomatligi kabi muhim",
+ ciEB:"Haftalik so'rov", ciMood:"So'nggi kunlarda kayfiyatingiz qanday?",
+ ciSleep:"Uxlab olishga ulgurayapsizmi?", ciBody:"Jismoniy ahvolingiz qanday?",
+ slNo:"Deyarli yo'q", slSome:"Ba'zan", slYes:"Ha", bBad:"Og'ir", bMid:"O'rtacha", bOk:"Yaxshi",
+ ciSave:"Saqlash", feedEB:"Bugungi emizish", feedT:"marta", feedAdd:"+ Belgilash",
+ hello:n=>`Assalomu alaykum, ${n}!`,
+ homeSubPreg:w=>`${w}-hafta ketmoqda — o'zingizga g'amxo'rlik qilayotganingiz juda yaxshi.`,
+ homeSubBaby:m=>`Chaqaloq ${m} oylik. Har bir savolingiz — uning salomatligiga hissa.`,
+ fruit:f=>`Chaqaloq hozir ${f}dek`,
+ pct:p=>`Yo'lning ${p}% bosib o'tildi`,
+ trim:t=>`${t}-trimestr · hafta odatlari`,
+ nextV:"keyingisi", wkShort:"hafta",
+ modPreg:["Homiladorlik","hafta ro'yxati va qabullar"],
+ modBaby:["Birinchi yil","emlash va bosqichlar"],
+ modScr:["Skrining","rivojlanish tekshiruvi"],
+ modMama:["Ona","so'rov va qo'llab-quvvatlash"],
+ statWeek:"hafta", statDone:"ish bajarildi", statMonth:"oylik chaqaloq", statVac:"emlash belgilandi",
+ riskLow:["Hammasi tinch","Anketangizda alohida xavf omillari yo'q. Rejali ko'riklarni davom ettiring — shu kifoya."],
+ riskMid:["Shifokor bilan muhokama qiling","Anketangizda keyingi rejali qabulda shifokorga aytish foydali bo'lgan jihatlar bor. Bu xavotir uchun sabab emas — shunchaki shifokor bilsin."],
+ riskHigh:["Shifokorga ertaroq ko'rining","Anketadagi omillar birikmasi — rejali qabulni kutmasdan, yaqin kunlarda shifokorga yozilish uchun sabab. Ko'pincha hammasi joyida, lekin ishonch hosil qilgan yaxshi."],
+ visitTxt:{v12:"Hisobga qo'yilish, birinchi tahlillar",v18:"Skrining-UTT, rivojlanish bahosi",v26:"Ko'rik, qon tahlili (qand, gemoglobin)",v30:"Ko'rik, dekret rasmiylashtirish",v34:"Ko'rik, chaqaloq holati",v36:"UTT, tug'ruq rejasi",v38:"Ko'rik",v40:"Ko'rik, tug'ruqqa tayyorlik"},
+ msNoteOk:"Ajoyib! Bu yoshga mos.",
+ msNoteWait:"Hechqisi yo'q — har bir chaqaloqning o'z sur'ati bor. Bir haftadan keyin yana so'raymiz; ko'nikma paydo bo'lmasa, pediatr bilan muhokama qilishni eslatamiz.",
+ scrOk:["Hammasi joyida","Javoblar yoshga mos. Keyingi tekshiruv — jadval bo'yicha."],
+ scrWatch:["Kuzatib boring","Bir-ikki ko'nikma hali ko'rinmadi — bu ko'pincha norma varianti. 2–3 haftadan keyin qayta tekshiring va pediatrga aytib o'ting."],
+ scrSee:["Maslahat olgan ma'qul","Bir nechta muhim ko'nikma hali ko'rinmadi. Bu tashxis emas — lekin aynan erta maslahat eng yaxshi natija beradi. Yaqin mutaxassislar:"],
+ specs:["Respublika erta aralashuv markazi — Toshkent, Yunusobod","Bolalar nevrologi, 12-poliklinika — Chilonzor","Logoped-defektolog, «Umid» markazi — Mirzo Ulug'bek"],
+ supportCard:["Biz yoningizdamiz","So'nggi so'rovlar sizga og'ir bo'lishi mumkinligini ko'rsatmoqda. Bu ko'p onalarda uchraydi — suhbat va qo'llab-quvvatlash yordam beradi. Iltimos, yaqinlaringiz va shifokor bilan bo'lishing. Ishonch telefoni: 1146."],
+ ciThanks:"So'rov saqlandi. O'zingizga g'amxo'rlik qilganingiz uchun rahmat 💛",
+ histT:"So'rovlaringiz", histEmpty:"Hali so'rovlar yo'q — birinchisini hoziroq qilish mumkin.",
+ vacDone:"Bor", vacNo:"Belgilash",
+ fruits:{6:"no'xat",10:"qulupnay",14:"limon",18:"anor",22:"kichkina handalak",27:"karam boshi",32:"katta jiyda",36:"non",42:"kichik tarvuz"},
+ growEmpty:"Hozircha yozuvlar yo'q", kg:"kg", cm:"sm",
+ alreadyCi:"Bu haftalik so'rov saqlangan. Bir necha kundan keyin qaytib keling 💛",
+ mood:"kayfiyat", sleep:"uyqu", body:"ahvol"
+}};
+
+/* ---------------- state ---------------- */
+const S = JSON.parse(localStorage.getItem('so_state')||'null') || {
+  lang:'ru', profile:null, tasks:{}, vacs:{}, growth:[], ms:{idx:0,log:{}}, checkins:[], feeds:[]
+};
+const save = ()=>localStorage.setItem('so_state',JSON.stringify(S));
+const L = ()=>T[S.lang];
+
+/* ---------------- i18n render ---------------- */
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v = L()[el.dataset.i18n];
+    if(typeof v==='string'){
+      if(el.dataset.i18n==='app'){ el.childNodes[0].nodeValue = v; }
+      else el.textContent = v;
+    }
+  });
+  document.getElementById('langRu').classList.toggle('on',S.lang==='ru');
+  document.getElementById('langUz').classList.toggle('on',S.lang==='uz');
+  document.documentElement.lang = S.lang;
+}
+function setLang(l){ S.lang=l; save(); applyLang(); renderAll(); }
+
+/* ---------------- navigation ---------------- */
+function go(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));
+  document.getElementById('main').scrollTop=0;
+  if(v==='home')renderHome();
+  if(v==='preg')renderPreg();
+  if(v==='baby')renderBaby();
+  if(v==='mama')renderMama();
+}
+
+/* ---------------- onboarding ---------------- */
+let onbRisks = new Set();
+document.getElementById('stageRow').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  document.querySelectorAll('#stageRow .chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');
+  const preg = b.dataset.v==='preg';
+  document.getElementById('pregQ').classList.toggle('hide',!preg);
+  document.getElementById('babyQ').classList.toggle('hide',preg);
+});
+document.getElementById('riskRow').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  b.classList.toggle('on');
+  const k=b.dataset.k;
+  b.classList.contains('on')?onbRisks.add(k):onbRisks.delete(k);
+});
+function finishOnb(){
+  const stage = document.querySelector('#stageRow .chip.on').dataset.v;
+  S.profile = {
+    name:(document.getElementById('fName').value||'').trim() || (S.lang==='ru'?'дорогая':'azizim'),
+    stage,
+    week: Math.min(42,Math.max(1,+document.getElementById('fWeek').value||12)),
+    babyM: Math.min(36,Math.max(0,+document.getElementById('fBabyM').value||0)),
+    age:+document.getElementById('fAge').value||26,
+    risks:[...onbRisks],
+    started:Date.now()
+  };
+  save(); go(stage==='preg'?'preg':'home'); renderHome();
+}
+
+/* =========================================================
+   "AI" CORE — rule-based generators.
+   In production each function is replaced by an LLM call with
+   the same input contract; these serve as the offline fallback.
+========================================================= */
+
+/* Risk flags: gentle, never diagnostic */
+function aiRiskAssessment(p){
+  let score=0;
+  if(p.age<18||p.age>35)score++;
+  if(p.risks.includes('smoke'))score++;
+  if(p.risks.includes('chronic'))score++;
+  if(p.risks.includes('prev'))score+=2;
+  if(p.risks.includes('hered'))score++;
+  if(score===0)return{level:'low',txt:L().riskLow};
+  if(score<=2)return{level:'mid',txt:L().riskMid};
+  return{level:'high',txt:L().riskHigh};
+}
+
+/* Weekly habit checklist: 3–5 short items, trimester + risk aware */
+const CL = {
+ru:{
+ t1:["Фолиевая кислота — 400 мкг каждый день","Прогулка 20–30 минут на свежем воздухе","6–8 стаканов воды в день","Встать на учёт в поликлинике до 12 недели"],
+ t2:["Продукты с железом: говядина, гранат, гречка","Сон не меньше 8 часов","Прогулка 30 минут","Лёгкая гимнастика для спины"],
+ t3:["Считайте шевеления малыша раз в день","Отдых на левом боку","Собрать сумку в роддом к 36 неделе","Короткие прогулки без нагрузки"],
+ smoke:"Дом без дыма: попросите близких не курить рядом",
+ chronic:"Измерьте давление и запишите — покажете врачу",
+ anemia:"Добавьте к обеду что-то с витамином C — железо усвоится лучше"
+},
+uz:{
+ t1:["Foliy kislotasi — har kuni 400 mkg","Toza havoda 20–30 daqiqa sayr","Kuniga 6–8 stakan suv","12-haftagacha poliklinikada hisobga turing"],
+ t2:["Temirga boy ovqatlar: mol go'shti, anor, grechka","Kamida 8 soat uyqu","30 daqiqa sayr","Bel uchun yengil mashqlar"],
+ t3:["Kuniga bir marta chaqaloq harakatlarini sanang","Chap yonboshda dam oling","36-haftagacha tug'ruqxona sumkasini yig'ing","Zo'riqishsiz qisqa sayrlar"],
+ smoke:"Tutunsiz uy: yaqinlaringizdan yoningizda chekmaslikni so'rang",
+ chronic:"Bosimni o'lchab yozib qo'ying — shifokorga ko'rsatasiz",
+ anemia:"Tushlikka C vitaminli narsa qo'shing — temir yaxshiroq so'riladi"
+}};
+function aiWeeklyChecklist(p){
+  const c = CL[S.lang];
+  const t = p.week<14?1:p.week<28?2:3;
+  const items=[...c['t'+t]];
+  if(p.risks.includes('smoke'))items.splice(2,0,c.smoke);
+  if(p.risks.includes('chronic'))items.splice(1,0,c.chronic);
+  return {trimester:t, items:items.slice(0,5)};
+}
+
+/* Postpartum pattern watch: 2+ low-mood check-ins in a row */
+function aiMamaPattern(checkins){
+  const last = checkins.slice(-2);
+  return last.length===2 && last.every(c=>c.mood<=2 || (c.mood<=3&&c.sleep===1));
+}
+
+/* =========================================================
+   PREGNANCY MODULE
+========================================================= */
+const VISITS=[12,18,26,30,34,36,38,40];
+function fruitFor(w){
+  const f=L().fruits; let best=f[6];
+  for(const k of Object.keys(f)){ if(w>=+k)best=f[k]; }
+  return best;
+}
+function renderPreg(){
+  const p=S.profile; if(!p)return;
+  const w=p.week;
+  document.getElementById('wkNum').textContent=w;
+  document.getElementById('wkFruit').textContent=L().fruit(fruitFor(w));
+  const pct=Math.min(100,Math.round(w/40*100));
+  document.getElementById('wkBar').style.width=pct+'%';
+  document.getElementById('wkPct').textContent=L().pct(pct);
+
+  /* blossom: 10 petals grow with progress */
+  const g=document.getElementById('petals'); g.innerHTML='';
+  const grown=Math.round(pct/10);
+  for(let i=0;i<10;i++){
+    const a=i*36*Math.PI/180;
+    const cx=60+Math.cos(a)*32, cy=60+Math.sin(a)*32;
+    const e=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    e.setAttribute('cx',cx);e.setAttribute('cy',cy);
+    e.setAttribute('rx',13);e.setAttribute('ry',9);
+    e.setAttribute('transform',`rotate(${i*36} ${cx} ${cy})`);
+    e.setAttribute('class','petal'+(i<grown?' grown':''));
+    g.appendChild(e);
+  }
+
+  /* risk card */
+  const r=aiRiskAssessment(p);
+  const cls=r.level==='low'?'calm':r.level==='mid'?'soft':'rose';
+  document.getElementById('riskCard').innerHTML=
+    `<div class="note ${cls}"><b>${r.txt[0]}</b>${r.txt[1]}</div>`;
+
+  /* checklist */
+  const cl=aiWeeklyChecklist(p);
+  document.getElementById('clTitle').textContent=L().trim(cl.trimester);
+  const key='w'+w+'_'+S.lang;
+  S.tasks[key]=S.tasks[key]||{};
+  document.getElementById('checklist').innerHTML=cl.items.map((it,i)=>{
+    const done=!!S.tasks[key][i];
+    return `<div class="task ${done?'done':''}">
+      <button class="tick" onclick="toggleTask('${key}',${i})" aria-label="toggle">✓</button>
+      <div class="t-text">${it}</div></div>`;
+  }).join('');
+
+  /* visits */
+  const nextIdx=VISITS.findIndex(v=>v>=w);
+  document.getElementById('visits').innerHTML=VISITS.map((v,i)=>{
+    const st=v<w?'past':i===nextIdx?'next':'';
+    return `<div class="visit ${st}">
+      <div class="wk">${v}<br>${L().wkShort}</div>
+      <p>${L().visitTxt['v'+v]}${i===nextIdx?`<span class="badge">${L().nextV}</span>`:''}</p>
+    </div>`;
+  }).join('');
+}
+function toggleTask(key,i){ S.tasks[key][i]=!S.tasks[key][i]; save(); renderPreg(); renderHome(); }
+
+/* =========================================================
+   FIRST YEAR MODULE
+========================================================= */
+const VAC={
+ru:[["При рождении","БЦЖ, Гепатит B, ОПВ-0"],["2 месяца","Пента-1, ОПВ-1, ПКВ-1"],["3 месяца","Пента-2, ОПВ-2"],["4 месяца","Пента-3, ОПВ-3, ПКВ-2"],["12 месяцев","КПК-1, ПКВ-3"],["16 месяцев","ОПВ-4"]],
+uz:[["Tug'ilganda","BCG, Gepatit B, OPV-0"],["2 oylik","Penta-1, OPV-1, PKV-1"],["3 oylik","Penta-2, OPV-2"],["4 oylik","Penta-3, OPV-3, PKV-2"],["12 oylik","KPK-1, PKV-3"],["16 oylik","OPV-4"]]};
+const MS={
+ru:["Малыш улыбается вам в ответ?","Держит голову лёжа на животе?","Следит глазами за игрушкой?","Переворачивается со спины на живот?","Сидит без поддержки?","Реагирует на своё имя?","Ползает?","Стоит у опоры?"],
+uz:["Chaqaloq sizga javoban jilmayadimi?","Qorinda yotib boshini tutadimi?","O'yinchoqni ko'zi bilan kuzatadimi?","Orqadan qoringa ag'dariladimi?","Suyanchiqsiz o'tiradimi?","Ismiga javob beradimi?","Emaklaydimi?","Tayanchda turadimi?"]};
+function renderBaby(){
+  document.getElementById('vacList').innerHTML=VAC[S.lang].map((v,i)=>{
+    const done=!!S.vacs[i];
+    return `<div class="row"><div><div class="r-main">${v[0]}</div><div class="r-sub">${v[1]}</div></div>
+    <button class="mini ${done?'done':''}" onclick="toggleVac(${i})">${done?L().vacDone:L().vacNo}</button></div>`;
+  }).join('');
+  const gl=document.getElementById('growList');
+  gl.innerHTML = S.growth.length? S.growth.slice(-4).reverse().map(g=>
+    `<div class="row"><div class="r-main">${g.w} ${L().kg} · ${g.h} ${L().cm}</div><div class="r-sub">${g.d}</div></div>`).join('')
+    : `<div class="r-sub">${L().growEmpty}</div>`;
+  const q=MS[S.lang][S.ms.idx % MS[S.lang].length];
+  document.getElementById('msQ').textContent=q;
+  document.getElementById('msNote').innerHTML='';
+}
+function toggleVac(i){ S.vacs[i]=!S.vacs[i]; save(); renderBaby(); renderHome(); }
+function addGrowth(){
+  const w=+document.getElementById('gW').value, h=+document.getElementById('gH').value;
+  if(!w||!h)return;
+  S.growth.push({w,h,d:new Date().toLocaleDateString(S.lang==='ru'?'ru-RU':'uz-UZ')});
+  save(); document.getElementById('gW').value='';document.getElementById('gH').value='';
+  renderBaby();
+}
+function answerMs(a){
+  S.ms.log[S.ms.idx]=a;
+  const ok=a==='yes';
+  document.getElementById('msNote').innerHTML=
+    `<div class="note ${ok?'calm':'soft'}" style="margin:12px 0 0">${ok?L().msNoteOk:L().msNoteWait}</div>`;
+  if(ok)S.ms.idx++;
+  save();
+}
+
+/* =========================================================
+   SCREENING MODULE (M-CHAT-style, adapted)
+========================================================= */
+const SCR={
+ru:["Смотрит ли малыш вам в глаза во время общения?","Откликается ли на своё имя?","Показывает ли пальчиком на интересные вещи?","Приносит ли вам предметы, чтобы показать?","Повторяет ли за вами простые действия?","Улыбается ли вам в ответ на улыбку?","Играет ли «понарошку» (кормит куклу, «звонит»)?","Использует ли жесты — машет «пока», кивает?"],
+uz:["Muloqotda chaqaloq ko'zingizga qaraydimi?","Ismiga javob beradimi?","Qiziq narsalarga barmog'i bilan ko'rsatadimi?","Ko'rsatish uchun sizga narsalar olib keladimi?","Oddiy harakatlaringizni takrorlaydimi?","Tabassumga javoban jilmayadimi?","«Go'yoki» o'ynaydimi (qo'g'irchoqni ovqatlantiradi)?","Imo-ishora ishlatadimi — «xayr» deb qo'l silkitadimi?"]};
+let scrState=null;
+document.getElementById('scrAges').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  document.querySelectorAll('#scrAges .chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');
+});
+function startScr(){
+  scrState={i:0,miss:0};
+  document.getElementById('scrStart').classList.add('hide');
+  document.getElementById('scrQz').classList.remove('hide');
+  document.getElementById('scrResult').innerHTML='';
+  showScrQ();
+}
+function showScrQ(){
+  document.getElementById('scrN').textContent=scrState.i+1;
+  document.getElementById('scrQText').textContent=SCR[S.lang][scrState.i];
+}
+function scrAns(miss){
+  scrState.miss+=miss; scrState.i++;
+  if(scrState.i<8){showScrQ();return;}
+  document.getElementById('scrQz').classList.add('hide');
+  document.getElementById('scrStart').classList.remove('hide');
+  const m=scrState.miss;
+  const kind=m<=1?'ok':m<=2?'watch':'see';
+  const txt=kind==='ok'?L().scrOk:kind==='watch'?L().scrWatch:L().scrSee;
+  const face=kind==='ok'?'🌿':kind==='watch'?'🌤':'🤍';
+  const cls=kind==='ok'?'calm':kind==='watch'?'soft':'rose';
+  let html=`<div class="card"><div class="dial"><div class="face">${face}</div>
+    <div class="verdict">${txt[0]}</div></div>
+    <div class="note ${cls}" style="margin:10px 0 0">${txt[1]}</div>`;
+  if(kind==='see'){
+    html+=`<div style="margin-top:12px">`+L().specs.map(s=>`<div class="row"><div class="r-main" style="font-size:.85rem">${s}</div></div>`).join('')+`</div>`;
+  }
+  html+=`</div>`;
+  document.getElementById('scrResult').innerHTML=html;
+}
+
+/* =========================================================
+   MAMA MODULE
+========================================================= */
+let ci={mood:0,sleep:0,body:0};
+function bindScale(id,key){
+  document.getElementById(id).addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); ci[key]=+b.dataset.v;
+  });
+}
+bindScale('ciMoodRow','mood');bindScale('ciSleepRow','sleep');bindScale('ciBodyRow','body');
+function weekStamp(){const d=new Date();const o=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-'+Math.ceil(((d-o)/864e5+o.getDay()+1)/7);}
+function saveCheckin(){
+  if(!ci.mood||!ci.sleep||!ci.body)return;
+  S.checkins.push({...ci,wk:weekStamp(),d:new Date().toLocaleDateString(S.lang==='ru'?'ru-RU':'uz-UZ')});
+  save(); ci={mood:0,sleep:0,body:0};
+  document.querySelectorAll('#ciCard .on').forEach(x=>x.classList.remove('on'));
+  renderMama(true);
+}
+function addFeed(){
+  const today=new Date().toDateString();
+  S.feeds=S.feeds.filter(f=>f.day===today);
+  S.feeds.push({day:today,t:new Date().toLocaleTimeString(S.lang==='ru'?'ru-RU':'uz-UZ',{hour:'2-digit',minute:'2-digit'})});
+  save(); renderMama();
+}
+function renderMama(justSaved){
+  /* support card via pattern watch */
+  const flag=aiMamaPattern(S.checkins);
+  document.getElementById('mamaSupport').innerHTML = flag?
+    `<div class="note rose"><b>${L().supportCard[0]}</b>${L().supportCard[1]}</div>`:'';
+  /* check-in card state */
+  const done=S.checkins.some(c=>c.wk===weekStamp());
+  const card=document.getElementById('ciCard');
+  if(done){
+    card.querySelectorAll('h3,.emojis,.chiprow,.btn').forEach(x=>x.classList.add('hide'));
+    if(!card.querySelector('.ci-done')){
+      const d=document.createElement('div');
+      d.className='note calm ci-done';d.style.margin='8px 0 0';
+      card.appendChild(d);
+    }
+    card.querySelector('.ci-done').textContent = justSaved?L().ciThanks:L().alreadyCi;
+  }else{
+    card.querySelectorAll('h3,.emojis,.chiprow,.btn').forEach(x=>x.classList.remove('hide'));
+    const dd=card.querySelector('.ci-done'); if(dd)dd.remove();
+  }
+  /* feeds */
+  const today=new Date().toDateString();
+  const feeds=S.feeds.filter(f=>f.day===today);
+  document.getElementById('feedN').textContent=feeds.length;
+  document.getElementById('feedList').textContent=feeds.slice(-5).map(f=>f.t).join(' · ');
+  /* history */
+  const h=document.getElementById('ciHist');
+  const moods=['','😞','😔','😐','🙂','😊'];
+  h.innerHTML=`<div class="eyebrow">${L().histT}</div>`+
+   (S.checkins.length? S.checkins.slice(-5).reverse().map(c=>
+     `<div class="row"><div class="r-main">${moods[c.mood]} ${L().mood} ${c.mood}/5</div>
+      <div class="r-sub">${L().sleep} ${c.sleep}/3 · ${L().body} ${c.body}/3 · ${c.d}</div></div>`).join('')
+    : `<div class="r-sub">${L().histEmpty}</div>`);
+}
+
+/* =========================================================
+   HOME
+========================================================= */
+function renderHome(){
+  const p=S.profile; if(!p)return;
+  document.getElementById('homeHello').textContent=L().hello(p.name);
+  const preg=p.stage==='preg';
+  document.getElementById('homeSub').textContent = preg?L().homeSubPreg(p.week):L().homeSubBaby(p.babyM);
+  const doneCount=Object.values(S.tasks['w'+p.week+'_'+S.lang]||{}).filter(Boolean).length;
+  const vacCount=Object.values(S.vacs).filter(Boolean).length;
+  document.getElementById('homeTop').innerHTML = `<div class="stat2" style="margin-bottom:14px">
+    <div class="card"><div class="num">${preg?p.week:p.babyM}</div><div class="lbl">${preg?L().statWeek:L().statMonth}</div></div>
+    <div class="card"><div class="num">${preg?doneCount:vacCount}</div><div class="lbl">${preg?L().statDone:L().statVac}</div></div>
+  </div>`;
+  const mods=[
+    ['preg','🌸','var(--anor-soft)',L().modPreg],
+    ['baby','🍼','var(--rishtan-soft)',L().modBaby],
+    ['scr','🔎','var(--saffron-soft)',L().modScr],
+    ['mama','💛','var(--anor-soft)',L().modMama]];
+  document.getElementById('homeMods').innerHTML=mods.map(m=>
+   `<div class="card modcard" onclick="go('${m[0]}')" role="button" tabindex="0">
+      <div class="ic" style="background:${m[2]}">${m[1]}</div>
+      <div><h3 style="margin:0">${m[3][0]}</h3><p>${m[3][1]}</p></div>
+    </div>`).join('');
+}
+function renderAll(){renderHome();if(S.profile){renderPreg();renderBaby();renderMama();}}
+
+/* ---------------- boot ---------------- */
+applyLang();
+if(S.profile){ go('home'); renderAll(); } else { go('onb'); document.querySelector('nav').style.display='none'; }
+const _go=go;
+go=function(v){ if(S.profile)document.querySelector('nav').style.display='flex'; _go(v); };
+</script>
+</body>
+</html>
