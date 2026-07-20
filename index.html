@@ -9,7 +9,7 @@
 <style>
 :root{
   --paper:#FBF4EC; --card:#FFFFFF;
-  --anor:#A62B45; --anor-soft:#F6E3E7;
+  --anor:#800020; --anor-soft:#F0D5DC;
   --rishtan:#2E7E8C; --rishtan-soft:#E2EFF1;
   --saffron:#E8A24C; --saffron-soft:#FBEEDB;
   --ink:#3B2530; --ink-60:#6E5A63; --line:#EBDDD4;
@@ -32,7 +32,7 @@ body{
 #app{width:100%;max-width:430px;min-height:100dvh;display:flex;flex-direction:column;background:var(--paper);box-shadow:0 0 60px rgba(59,37,48,.08);position:relative}
 header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px}
 .logo{display:flex;align-items:center;gap:10px}
-.logo svg{width:34px;height:34px;flex:none}
+.logo img{width:34px;height:34px;flex:none;object-fit:contain}
 .logo h1{font-family:'Alice',serif;font-size:1.25rem;font-weight:400;letter-spacing:.01em}
 .logo span{display:block;font-family:'Nunito';font-size:.68rem;color:var(--ink-60);letter-spacing:.08em;text-transform:uppercase}
 .lang{display:flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
@@ -87,7 +87,7 @@ input[type=text],input[type=number],input[type=date],select,textarea{width:100%;
 .note{border-radius:16px;padding:14px 16px;font-size:.9rem;line-height:1.45;font-weight:600;margin-bottom:14px}
 .note.calm{background:var(--rishtan-soft);color:#1F5560}
 .note.soft{background:var(--saffron-soft);color:#7A5210}
-.note.rose{background:var(--anor-soft);color:#7C2136}
+.note.rose{background:var(--anor-soft);color:#600018}
 .note b{display:block;font-family:'Alice',serif;font-weight:400;font-size:1rem;margin-bottom:4px}
 .emojis{display:flex;justify-content:space-between;margin:8px 0}
 .emojis button{font-size:1.7rem;background:#fff;border:2px solid transparent;border-radius:14px;padding:8px 10px;cursor:pointer;filter:grayscale(.5);transition:.15s}
@@ -175,7 +175,7 @@ input:checked+.slider:before{transform:translateX(20px)}
 .drq-item:last-child{border-bottom:0}
 .drq-reason{font-size:.78rem;color:var(--ink-60);margin-top:3px}
 /* sentiment support */
-.sentiment-cta{background:var(--anor-soft);border-radius:16px;padding:14px 16px;margin-top:12px;font-size:.9rem;font-weight:600;line-height:1.45;color:#7C2136}
+.sentiment-cta{background:var(--anor-soft);border-radius:16px;padding:14px 16px;margin-top:12px;font-size:.9rem;font-weight:600;line-height:1.45;color:#600018}
 /* week size image */
 .size-img-wrap{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 8px}
 .size-img-wrap img{width:80px;height:80px;border-radius:50%;object-fit:contain;background:var(--anor-soft);padding:6px;border:2px solid var(--anor-soft)}
@@ -187,7 +187,7 @@ input:checked+.slider:before{transform:translateX(20px)}
 /* photo check */
 .photo-result-badge{display:inline-block;border-radius:99px;padding:4px 14px;font:800 .82rem 'Nunito';margin-bottom:8px}
 .photo-result-badge.ok{background:var(--rishtan-soft);color:#1F5560}
-.photo-result-badge.att{background:var(--anor-soft);color:#7C2136}
+.photo-result-badge.att{background:var(--anor-soft);color:#600018}
 /* voice button */
 .mic-btn{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;font-size:1.1rem;cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-family:'Nunito';font-size:.8rem;font-weight:700}
 .mic-btn.active{background:var(--anor);border-color:var(--anor);color:#fff}
@@ -197,14 +197,7 @@ input:checked+.slider:before{transform:translateX(20px)}
 <div id="app">
   <header>
     <div class="logo">
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="22" r="13" fill="#A62B45"/>
-        <path d="M20 9c-2 0-3.5-2-3-4 0 0 2-1 3.5-1S24 5 24 5c.5 2-2 4-4 4z" fill="#2E7E8C"/>
-        <circle cx="15" cy="20" r="2.3" fill="#FBF4EC" opacity=".9"/>
-        <circle cx="22" cy="17" r="2.3" fill="#FBF4EC" opacity=".9"/>
-        <circle cx="25" cy="24" r="2.3" fill="#FBF4EC" opacity=".9"/>
-        <circle cx="18" cy="26" r="2.3" fill="#FBF4EC" opacity=".9"/>
-      </svg>
+      <img src="assets/imagelogo.png" alt="Соғлом Она логотип" aria-hidden="true">
       <h1 data-i18n="app">Соғлом Она<span data-i18n="tag">от планирования до 3 лет</span></h1>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -1309,7 +1302,7 @@ function wombSVG(w){
     </radialGradient>
   </defs>
   <ellipse cx="115" cy="102" rx="102" ry="92" fill="url(#wg)"/>
-  <ellipse cx="115" cy="102" rx="86" ry="77" fill="#F6E3E7" opacity=".55"/>
+  <ellipse cx="115" cy="102" rx="86" ry="77" fill="#F0D5DC" opacity=".55"/>
   <ellipse cx="52" cy="58" rx="26" ry="20" fill="url(#pl)"/>
   <path d="M60 68 C 85 95, 88 120, 112 ${120+8*s}" stroke="#B65A70" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="1 9" stroke-dashoffset="0" opacity=".9"/>
   <path d="M60 68 C 85 95, 88 120, 112 ${120+8*s}" stroke="#D98CA0" stroke-width="6" fill="none" stroke-linecap="round"/>
