@@ -157,6 +157,25 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 .cyc-days i{width:26px;height:26px;border-radius:8px;background:var(--rishtan-soft);display:grid;place-items:center;font:700 .68rem 'Nunito';color:var(--ink-60);font-style:normal}
 .cyc-days i.per{background:var(--anor);color:#fff}
 .cyc-days i.pred{background:var(--anor-soft);color:var(--anor)}
+/* child tabs */
+.child-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.child-tab{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:8px 14px;font:700 .82rem 'Nunito';cursor:pointer;color:var(--ink)}
+.child-tab.on{background:var(--rishtan);border-color:var(--rishtan);color:#fff}
+/* toggle switch */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--line)}
+.toggle-row:last-child{border-bottom:0}
+.toggle{position:relative;width:44px;height:24px;flex:none;display:inline-block}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.slider{position:absolute;inset:0;background:var(--line);border-radius:99px;transition:.2s;cursor:pointer}
+.slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+input:checked+.slider{background:var(--rishtan)}
+input:checked+.slider:before{transform:translateX(20px)}
+/* dr question map */
+.drq-item{padding:10px 0;border-bottom:1px dashed var(--line)}
+.drq-item:last-child{border-bottom:0}
+.drq-reason{font-size:.78rem;color:var(--ink-60);margin-top:3px}
+/* sentiment support */
+.sentiment-cta{background:var(--anor-soft);border-radius:16px;padding:14px 16px;margin-top:12px;font-size:.9rem;font-weight:600;line-height:1.45;color:#7C2136}
 </style>
 </head>
 <body>
@@ -275,6 +294,23 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
           <button class="chip teal" data-k="hered" data-i18n="rHered">Осложнения у близких родственниц</button>
           <button class="chip teal" data-k="prev" data-i18n="rPrev">Осложнения в прошлую беременность</button>
         </div>
+        <div class="eyebrow" style="margin-top:18px" data-i18n="heredBlock">Наследственность</div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <div style="flex:1"><label class="q" data-i18n="qBirthCount">Количество родов</label>
+          <input type="number" id="fBirthCount" min="0" max="20" value="0" inputmode="numeric"></div>
+          <div style="flex:1"><label class="q" data-i18n="qPregCount">Количество беременностей</label>
+          <input type="number" id="fPregCount" min="0" max="20" value="0" inputmode="numeric"></div>
+        </div>
+        <label class="q" data-i18n="qGeneticDis">Генетические заболевания в семье</label>
+        <div class="chiprow" id="geneticRow">
+          <button class="chip teal" data-v="present" data-i18n="gPresent">Присутствует</button>
+          <button class="chip teal" data-v="absent" data-i18n="gAbsent">Отсутствует</button>
+          <button class="chip teal on" data-v="unknown" data-i18n="gUnknown">Не знаю</button>
+        </div>
+        <div class="toggle-row">
+          <span class="r-main" data-i18n="qRelMarriage">Родственные браки</span>
+          <label class="toggle"><input type="checkbox" id="fRelMarriage"><span class="slider"></span></label>
+        </div>
       </div>
       <div class="btnrow">
         <button class="btn ghost" onclick="onbNext(2)" data-i18n="back">Назад</button>
@@ -334,10 +370,35 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
       </div>
 
       <div class="card">
+        <div class="eyebrow" data-i18n="birthPrepEB">Подготовка к родам</div>
+        <div class="toggle-row">
+          <span class="r-main" data-i18n="bpCourses">Курсы для беременных</span>
+          <label class="toggle"><input type="checkbox" id="bpCourses" onchange="saveBirthPrep()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span class="r-main" data-i18n="bpBreathing">Техника дыхания</span>
+          <label class="toggle"><input type="checkbox" id="bpBreathing" onchange="saveBirthPrep()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+          <span class="r-main" data-i18n="bpSpecialist">Консультация специалиста по подготовке</span>
+          <label class="toggle"><input type="checkbox" id="bpSpecialist" onchange="saveBirthPrep()"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="eyebrow" data-i18n="visitsEB">Визиты к врачу</div>
         <h3 data-i18n="visitsT">План осмотров</h3>
         <div id="visits"></div>
       </div>
+
+      <div class="card" id="drqCard">
+        <div class="eyebrow" data-i18n="drqEB">Вопросы к врачу</div>
+        <h3 data-i18n="drqT">Персональные вопросы к визиту</h3>
+        <p class="week-note" data-i18n="drqSub">Сформировано на основе ваших данных</p>
+        <div id="drqList" style="margin:10px 0"></div>
+        <button class="btn ghost" style="margin-top:6px" onclick="generateDrQ()" data-i18n="drqGenerate">Сформировать вопросы</button>
+      </div>
+
       <p class="disclaimer" data-i18n="disc2">График основан на рекомендациях ВОЗ. Точный план всегда определяет ваш врач.</p>
     </section>
 
@@ -345,6 +406,10 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
     <section class="view" id="v-baby">
       <h2 data-i18n="mBaby">Первый год</h2>
       <p class="sub" data-i18n="mBabySub">Кормление, рост, прививки и вехи</p>
+
+      <!-- Child profile tabs -->
+      <div class="child-tabs" id="childTabs"></div>
+      <button class="btn ghost" style="margin-bottom:14px;padding:12px" onclick="addChild()" data-i18n="addChildBtn">+ Добавить ребёнка</button>
 
       <div class="card">
         <div class="eyebrow" data-i18n="feedEB">Кормление сегодня</div>
@@ -368,6 +433,14 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
           <button class="mini" style="align-self:stretch" onclick="addGrowth()" data-i18n="add">Записать</button>
         </div>
         <div id="growList" style="margin-top:8px"></div>
+        <div class="eyebrow" style="margin-top:14px" data-i18n="birthDataEB">Данные при рождении</div>
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <input type="number" id="bW" step="0.01" inputmode="decimal" data-i18n-ph="birthWeightLbl" placeholder="Вес при рождении, кг">
+          <input type="number" id="bH" inputmode="numeric" data-i18n-ph="birthHeightLbl" placeholder="Рост при рождении, см">
+          <input type="date" id="bD" style="flex:1.5">
+        </div>
+        <button class="mini" style="margin-top:6px" onclick="saveBirthData()" data-i18n="save">Сохранить</button>
+        <div id="birthDataNote" class="week-note" style="margin-top:4px"></div>
       </div>
 
       <div class="card">
@@ -384,6 +457,84 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
           <button class="chip" onclick="answerMs('notyet')" data-i18n="notyet">Пока нет</button>
         </div>
         <div id="msNote"></div>
+      </div>
+
+      <!-- Chronic conditions for child -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="childChronicEB">Хронические заболевания ребёнка</div>
+        <div class="chiprow" id="childChronRow">
+          <button class="chip teal" data-k="diabetes" data-i18n="cDiab">Диабет</button>
+          <button class="chip teal" data-k="anemia" data-i18n="cAnemia">Анемия</button>
+          <button class="chip teal" data-k="allergy" data-i18n="cAllergy">Аллергии</button>
+          <button class="chip teal" data-k="heart" data-i18n="cHeart">Сердце</button>
+          <button class="chip teal" data-k="thyroid" data-i18n="cThyroid">Щитовидная железа</button>
+          <button class="chip teal" data-k="kidney" data-i18n="cKidney">Почки</button>
+        </div>
+        <button class="mini" style="margin-top:8px" onclick="saveChildChronic()">Сохранить</button>
+        <div id="childChronNote" class="week-note" style="margin-top:4px"></div>
+      </div>
+
+      <!-- Birth complications -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="birthCompEB">Осложнения при рождении</div>
+        <div class="chiprow" id="birthCompRow">
+          <button class="chip teal" data-k="bleeding" data-i18n="compBleeding">Кровотечение</button>
+          <button class="chip teal" data-k="placenta" data-i18n="compPlacenta">Задержка плаценты</button>
+          <button class="chip teal" data-k="trauma" data-i18n="compTrauma">Травмы родовых путей</button>
+          <button class="chip teal" data-k="eclampsia" data-i18n="compEclampsia">Эклампсия</button>
+          <button class="chip teal" data-k="hypoxia" data-i18n="compHypoxia">Гипоксия плода</button>
+          <button class="chip teal" data-k="presentation" data-i18n="compPresentation">Неправильное предлежание</button>
+          <button class="chip teal" data-k="dystocia" data-i18n="compDystocia">Нарушение родовой деятельности</button>
+          <button class="chip teal" data-k="none" data-i18n="compNone">Нет</button>
+        </div>
+        <label class="q" data-i18n="birthCompFreeLbl">Описать дополнительно</label>
+        <input type="text" id="birthCompTextIn" data-i18n-ph="birthCompFreeLbl" placeholder="Описать дополнительно">
+        <button class="mini" style="margin-top:8px" onclick="saveBirthComps()">Сохранить</button>
+        <div id="birthCompNote" class="week-note" style="margin-top:4px"></div>
+      </div>
+
+      <!-- Illnesses during first year -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="illnessEB">Перенесённые заболевания</div>
+        <div id="illnessList"></div>
+        <div class="chiprow" id="illnessChipRow" style="margin-top:8px">
+          <button class="chip teal" data-k="measles" data-i18n="illMeasles">Корь</button>
+          <button class="chip teal" data-k="chickenpox" data-i18n="illChickenpox">Ветрянка</button>
+          <button class="chip teal" data-k="whooping" data-i18n="illWhooping">Коклюш</button>
+          <button class="chip teal" data-k="rubella" data-i18n="illRubella">Краснуха</button>
+          <button class="chip teal" data-k="scarlet" data-i18n="illScarlet">Скарлатина</button>
+          <button class="chip teal" data-k="rota" data-i18n="illRota">Ротавирус</button>
+          <button class="chip teal" data-k="other" data-i18n="illOther">Другое</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="text" id="illOtherName" placeholder="Название (если другое)">
+          <input type="date" id="illDateIn">
+          <button class="mini" onclick="addIllness()">+</button>
+        </div>
+      </div>
+
+      <!-- Specialist follow-up -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="childSpecEB">Учёт у специалистов</div>
+        <div id="childSpecList"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="text" id="csTypeIn" data-i18n-ph="specTypeLbl" placeholder="Тип специалиста" style="flex:1">
+          <input type="text" id="csNameIn" data-i18n-ph="specNameClinicLbl" placeholder="Имя / Клиника" style="flex:1.5">
+          <button class="mini" onclick="addChildSpec()">+</button>
+        </div>
+      </div>
+
+      <!-- Custom metrics -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="addMetricBtn">Свои показатели</div>
+        <div id="customMetricsList"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <input type="text" id="cmName" data-i18n-ph="metricNameLbl" placeholder="Название" style="flex:2;min-width:90px">
+          <input type="text" id="cmValue" data-i18n-ph="metricValueLbl" placeholder="Значение" style="flex:1;min-width:60px">
+          <input type="text" id="cmUnit" data-i18n-ph="metricUnitLbl" placeholder="Единица" style="flex:1;min-width:50px">
+          <input type="date" id="cmDate" style="flex:1.5;min-width:110px">
+          <button class="mini" onclick="addCustomMetric()">+</button>
+        </div>
       </div>
     </section>
 
@@ -420,6 +571,47 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
       <p class="sub" data-i18n="mMamaSub">Ваше состояние так же важно, как здоровье малыша</p>
 
       <div id="mamaSupport"></div>
+      <div id="mamaSentiment"></div>
+
+      <!-- Postpartum recovery -->
+      <div class="card">
+        <div class="eyebrow" data-i18n="ppRecovEB">Послеродовое восстановление</div>
+        <h3 data-i18n="ppRecovT">Данные о родах</h3>
+        <label class="q" data-i18n="ppBirthTypeLbl">Тип родов</label>
+        <div class="chiprow" id="ppBirthTypeRow">
+          <button class="chip" data-v="natural" data-i18n="ppNatural">Естественные</button>
+          <button class="chip" data-v="cs" data-i18n="ppCS">Кесарево (КС)</button>
+          <button class="chip" data-v="ecs" data-i18n="ppECS">Экстренное КС</button>
+        </div>
+        <label class="q" data-i18n="ppInterventionsLbl">Медицинские вмешательства</label>
+        <div class="chiprow" id="ppIntervRow">
+          <button class="chip teal" data-k="stim" data-i18n="ppStimulation">Стимуляция</button>
+          <button class="chip teal" data-k="oxyto" data-i18n="ppOxytocin">Окситоцин</button>
+          <button class="chip teal" data-k="other" data-i18n="ppIntOther">Другое</button>
+          <button class="chip teal" data-k="none" data-i18n="ppNoInterv">Не было</button>
+        </div>
+        <label class="q" data-i18n="ppCompDuringLbl">Осложнения в родах</label>
+        <div class="chiprow" id="ppCompDuringRow">
+          <button class="chip teal" data-k="bleeding" data-i18n="compBleeding">Кровотечение</button>
+          <button class="chip teal" data-k="placenta" data-i18n="compPlacenta">Задержка плаценты</button>
+          <button class="chip teal" data-k="trauma" data-i18n="compTrauma">Травмы родовых путей</button>
+          <button class="chip teal" data-k="eclampsia" data-i18n="compEclampsia">Эклампсия</button>
+          <button class="chip teal" data-k="hypoxia" data-i18n="compHypoxia">Гипоксия плода</button>
+          <button class="chip teal" data-k="presentation" data-i18n="compPresentation">Неправильное предлежание</button>
+          <button class="chip teal" data-k="dystocia" data-i18n="compDystocia">Нарушение родовой деятельности</button>
+          <button class="chip teal" data-k="none" data-i18n="compNone">Нет</button>
+        </div>
+        <label class="q" data-i18n="ppCompAfterLbl">Осложнения после родов</label>
+        <div class="chiprow" id="ppCompAfterRow">
+          <button class="chip teal" data-k="endometritis" data-i18n="ppEndometritis">Эндометрит</button>
+          <button class="chip teal" data-k="mastitis" data-i18n="ppMastitis">Мастит</button>
+          <button class="chip teal" data-k="none" data-i18n="compNone">Нет</button>
+        </div>
+        <label class="q" data-i18n="ppOtherCompLbl">Другое (опишите)</label>
+        <input type="text" id="ppAfterOther" placeholder="...">
+        <button class="btn primary" style="margin-top:14px" onclick="savePostpartum()" data-i18n="ppSaveLbl">Сохранить данные о родах</button>
+        <div id="ppSavedNote" class="week-note" style="margin-top:6px"></div>
+      </div>
 
       <div class="card">
         <div class="eyebrow" data-i18n="ciChartEB">Ваша динамика</div>
@@ -446,6 +638,8 @@ nav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
           <button class="chip" data-v="2" data-i18n="bMid">Средне</button>
           <button class="chip" data-v="3" data-i18n="bOk">Хорошо</button>
         </div>
+        <h3 data-i18n="ciTextLbl" style="margin-top:14px">Как прошла неделя?</h3>
+        <textarea id="ciText" rows="3" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:14px;font:600 .95rem 'Nunito';resize:vertical" data-i18n-ph="ciTextPh" placeholder="Напишите немного — это только для вас"></textarea>
         <button class="btn primary" style="margin-top:14px" onclick="saveCheckin()" data-i18n="ciSave">Сохранить чек-ин</button>
       </div>
 
@@ -627,7 +821,38 @@ ru:{
  growEmpty:"Записей пока нет", kg:"кг", cm:"см", g:"г",
  alreadyCi:"Чек-ин на этой неделе уже сохранён. Возвращайтесь через несколько дней 💛",
  mood:"настроение", sleep:"сон", body:"самочувствие",
- anon:"Мама"
+ anon:"Мама",
+ heredBlock:"Наследственность",
+ qBirthCount:"Количество родов",qPregCount:"Количество беременностей",
+ qGeneticDis:"Генетические заболевания в семье",
+ gPresent:"Присутствует",gAbsent:"Отсутствует",gUnknown:"Не знаю",
+ qRelMarriage:"Родственные браки",
+ addChildBtn:"+ Добавить ребёнка",childNameLbl:"Имя",childSurnameLbl:"Фамилия",childGenderLbl:"Пол",
+ genderM:"Мальчик",genderF:"Девочка",
+ addMetricBtn:"+ Свой показатель",metricNameLbl:"Название",metricValueLbl:"Значение",metricUnitLbl:"Единица",
+ childChronicEB:"Хронические заболевания ребёнка",
+ birthDataEB:"Данные при рождении",birthWeightLbl:"Вес при рождении, кг",birthHeightLbl:"Рост при рождении, см",birthDateLbl:"Дата рождения",
+ birthCompEB:"Осложнения во время или после родов",birthCompFreeLbl:"Описать дополнительно",
+ compBleeding:"Кровотечение",compPlacenta:"Задержка плаценты",compTrauma:"Травмы родовых путей",
+ compEclampsia:"Эклампсия",compHypoxia:"Гипоксия плода",compPresentation:"Неправильное предлежание",
+ compDystocia:"Нарушение родовой деятельности",compNone:"Нет",
+ illnessEB:"Перенесённые заболевания",illDate:"Дата (необяз.)",
+ illMeasles:"Корь",illChickenpox:"Ветрянка",illWhooping:"Коклюш",illRubella:"Краснуха",illScarlet:"Скарлатина",illRota:"Ротавирус",illOther:"Другое",
+ childSpecEB:"Учёт у специалистов",addChildSpecBtn:"+ Добавить специалиста",specTypeLbl:"Тип специалиста",specNameClinicLbl:"Имя / Клиника",
+ birthPrepEB:"Подготовка к родам",bpCourses:"Курсы для беременных (посетила)",bpBreathing:"Техника дыхания (изучила)",bpSpecialist:"Консультация специалиста по подготовке",
+ photoAttachLbl:"📷 Прикрепить фото визита",photoAttachedLbl:"✓ Фото прикреплено",
+ ppRecovEB:"Послеродовое восстановление",ppRecovT:"Данные о родах",
+ ppBirthTypeLbl:"Тип родов",ppNatural:"Естественные / ЕР",ppCS:"Кесарево (КС)",ppECS:"Экстренное КС",
+ ppInterventionsLbl:"Медицинские вмешательства",ppStimulation:"Стимуляция",ppOxytocin:"Окситоцин",ppIntOther:"Другое",ppNoInterv:"Не было",
+ ppCompDuringLbl:"Осложнения в родах",ppCompAfterLbl:"Осложнения после родов",
+ ppEndometritis:"Эндометрит",ppMastitis:"Мастит",
+ ppOtherCompLbl:"Другое (опишите)",ppSaveLbl:"Сохранить данные о родах",ppSaved:"Данные сохранены ✓",
+ drqEB:"Вопросы к врачу",drqT:"Персональные вопросы к визиту",drqSub:"Сформировано на основе ваших данных",
+ drqGenerate:"Сформировать вопросы",drqReason:"Почему этот вопрос:",
+ drqEmpty:"Нет предстоящих визитов. Запланируйте визит в разделе «Беременность».",
+ ciTextLbl:"Как прошла неделя?",ciTextPh:"Напишите немного — это только для вас",
+ sentimentCard:"Похоже, эта неделя была особенно тяжёлой. Хотите поговорить с кем-то? Вот специалисты рядом.",
+ sentimentBtn:"Найти специалиста"
 },
 uz:{
  app:"Sog'lom Ona", tag:"rejalashtirishdan 3 yoshgacha",
@@ -724,17 +949,64 @@ uz:{
  growEmpty:"Hozircha yozuvlar yo'q", kg:"kg", cm:"sm", g:"g",
  alreadyCi:"Bu haftalik so'rov saqlangan. Bir necha kundan keyin qaytib keling 💛",
  mood:"kayfiyat", sleep:"uyqu", body:"ahvol",
- anon:"Ona"
+ anon:"Ona",
+ heredBlock:"Nasl-nasab",
+ qBirthCount:"Tug'ruqlar soni",qPregCount:"Homiladorliklar soni",
+ qGeneticDis:"Oiladagi genetik kasalliklar",
+ gPresent:"Bor",gAbsent:"Yo'q",gUnknown:"Bilmayman",
+ qRelMarriage:"Qarindoshlar o'rtasidagi nikoh",
+ addChildBtn:"+ Bola qo'shish",childNameLbl:"Ism",childSurnameLbl:"Familiya",childGenderLbl:"Jinsi",
+ genderM:"O'g'il bola",genderF:"Qiz bola",
+ addMetricBtn:"+ O'z ko'rsatkich",metricNameLbl:"Nomi",metricValueLbl:"Qiymati",metricUnitLbl:"Birlik",
+ childChronicEB:"Bolaning surunkali kasalliklari",
+ birthDataEB:"Tug'ilishdagi ma'lumotlar",birthWeightLbl:"Tug'ilishdagi vazn, kg",birthHeightLbl:"Tug'ilishdagi bo'y, sm",birthDateLbl:"Tug'ilgan sana",
+ birthCompEB:"Tug'ruq paytida yoki keyin asoratlar",birthCompFreeLbl:"Qo'shimcha tavsif",
+ compBleeding:"Qon ketish",compPlacenta:"Yo'ldosh tutilishi",compTrauma:"Tug'ruq yo'llari jarohatlari",
+ compEclampsia:"Eklyampsiya",compHypoxia:"Homila gipoksiyasi",compPresentation:"Noto'g'ri holat",
+ compDystocia:"Tug'ruq faoliyati buzilishi",compNone:"Yo'q",
+ illnessEB:"O'tkazilgan kasalliklar",illDate:"Sana (ixtiyoriy)",
+ illMeasles:"Qizamiq",illChickenpox:"Suvchechak",illWhooping:"Ko'kyo'tal",illRubella:"Qizilcha",illScarlet:"Qizil isitma",illRota:"Rotavirus",illOther:"Boshqa",
+ childSpecEB:"Mutaxassislar hisobida",addChildSpecBtn:"+ Mutaxassis qo'shish",specTypeLbl:"Mutaxassis turi",specNameClinicLbl:"Ism / Klinika",
+ birthPrepEB:"Tug'ruqqa tayyorgarlik",bpCourses:"Homiladorlar kurslari (qatnashdim)",bpBreathing:"Nafas texnikasi (o'rgandim)",bpSpecialist:"Tayyorgarlik mutaxassisiga murojaat",
+ photoAttachLbl:"📷 Tashrif rasmini biriktirish",photoAttachedLbl:"✓ Rasm biriktirildi",
+ ppRecovEB:"Tug'ruqdan keyingi tiklanish",ppRecovT:"Tug'ruq ma'lumotlari",
+ ppBirthTypeLbl:"Tug'ruq turi",ppNatural:"Tabiiy tug'ruq",ppCS:"Kesarcha kesim (KK)",ppECS:"Shoshilinch KK",
+ ppInterventionsLbl:"Tibbiy aralashuvlar",ppStimulation:"Stimulyatsiya",ppOxytocin:"Oksitotsin",ppIntOther:"Boshqa",ppNoInterv:"Yo'q",
+ ppCompDuringLbl:"Tug'ruqdagi asoratlar",ppCompAfterLbl:"Tug'ruqdan keyingi asoratlar",
+ ppEndometritis:"Endometrit",ppMastitis:"Mastit",
+ ppOtherCompLbl:"Boshqa (tasvirlab bering)",ppSaveLbl:"Tug'ruq ma'lumotlarini saqlash",ppSaved:"Ma'lumotlar saqlandi ✓",
+ drqEB:"Shifokorga savollar",drqT:"Tashrifga shaxsiy savollar",drqSub:"Ma'lumotlaringiz asosida tuzilgan",
+ drqGenerate:"Savollarni tuzish",drqReason:"Nega bu savol:",
+ drqEmpty:"Kelgusi tashriflar yo'q. 'Homiladorlik' bo'limida tashrif rejalashtiring.",
+ ciTextLbl:"Hafta qanday o'tdi?",ciTextPh:"Biroz yozing — bu faqat siz uchun",
+ sentimentCard:"Bu hafta juda og'ir bo'lganga o'xshaydi. Mutaxassis bilan gaplashishni istaysizmi?",
+ sentimentBtn:"Mutaxassis topish"
 }};
 /* ---------------- state ---------------- */
 const S = JSON.parse(localStorage.getItem('so_state')||'null') || {
   lang:'ru', profile:null, tasks:{}, meds:[], remDone:{}, visitSt:{},
   vacs:{}, growth:[], ms:{idx:0,log:{}}, checkins:[], feeds:[],
-  cycles:[], cycLen:28, scrHistory:[], chat:{}, specRates:{}
+  cycles:[], cycLen:28, scrHistory:[], chat:{}, specRates:{},
+  children:[], activeChild:0,
+  postpartum:{birthType:'',interventions:[],compsDuring:[],compsAfter:[],compsAfterOther:''},
+  birthPrep:{courses:false,breathing:false,specialist:false},
+  visitPhotos:{}, checkinTexts:[]
 };
-['meds','cycles','scrHistory'].forEach(k=>{ if(!S[k])S[k]=[]; });
-['remDone','visitSt','chat','specRates'].forEach(k=>{ if(!S[k])S[k]={}; });
+['meds','cycles','scrHistory','children','checkinTexts'].forEach(k=>{ if(!S[k])S[k]=[]; });
+['remDone','visitSt','chat','specRates','visitPhotos'].forEach(k=>{ if(!S[k])S[k]={}; });
 if(!S.cycLen)S.cycLen=28;
+if(!S.postpartum)S.postpartum={birthType:'',interventions:[],compsDuring:[],compsAfter:[],compsAfterOther:''};
+if(!S.birthPrep)S.birthPrep={courses:false,breathing:false,specialist:false};
+if(S.activeChild===undefined)S.activeChild=0;
+/* migrate legacy single-child data into S.children[0] */
+if(!S.children.length){
+  S.children.push({
+    name:'',surname:'',gender:'',
+    feeds:S.feeds||[], growth:S.growth||[], vacs:S.vacs||{}, ms:S.ms||{idx:0,log:{}},
+    birthData:{w:'',h:'',d:''},birthComps:[],birthCompText:'',
+    illnesses:[],chronic:[],specialists:[],customMetrics:[]
+  });
+}
 /* migrate v1 profiles */
 if(S.profile && !S.profile.preQ){
   const r=S.profile.risks||[];
@@ -795,6 +1067,11 @@ function multiRow(id,set){
 multiRow('habitRow',onbSel.habits);
 multiRow('heredRow',onbSel.hered);
 multiRow('chronRow',onbSel.chronic);
+document.getElementById('geneticRow').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  document.querySelectorAll('#geneticRow .chip').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on');
+});
 document.getElementById('stageRow').addEventListener('click',e=>{
   const b=e.target.closest('.chip'); if(!b)return;
   document.querySelectorAll('#stageRow .chip').forEach(c=>c.classList.remove('on'));
@@ -834,6 +1111,12 @@ function finishOnb(){
       diet:document.getElementById('fDiet').value.trim(),
       allergy:document.getElementById('fAllergy').value.trim(),
       habits:[...onbSel.habits], hered:[...onbSel.hered]
+    },
+    heredity:{
+      birthCount:+document.getElementById('fBirthCount').value||0,
+      pregCount:+document.getElementById('fPregCount').value||0,
+      genetic:(document.querySelector('#geneticRow .chip.on')||{dataset:{}}).dataset.v||'unknown',
+      relMarriage:document.getElementById('fRelMarriage').checked
     },
     started:Date.now()
   };
@@ -984,13 +1267,25 @@ function renderPreg(){
 
   renderRems(p,w);
 
+  /* birth prep toggles */
+  document.getElementById('bpCourses').checked=S.birthPrep.courses;
+  document.getElementById('bpBreathing').checked=S.birthPrep.breathing;
+  document.getElementById('bpSpecialist').checked=S.birthPrep.specialist;
+
   const nextIdx=VISITS.findIndex(v=>v>=w);
   document.getElementById('visits').innerHTML=VISITS.map((v,i)=>{
     const st=S.visitSt[v]||''; // '', 'att', 'miss'
     const rowCls=v<w&&!st?'past':i===nextIdx?'next':'';
+    const hasPhoto=!!S.visitPhotos[v];
     return `<div class="visit ${rowCls}">
       <div class="wk">${v}<br>${L().wkShort}</div>
-      <p>${L().visitTxt['v'+v]}${i===nextIdx?`<span class="badge">${L().nextV}</span>`:''}</p>
+      <div style="flex:1">
+        <p style="margin:0">${L().visitTxt['v'+v]}${i===nextIdx?`<span class="badge">${L().nextV}</span>`:''}</p>
+        <button class="mini" style="margin-top:6px;font-size:.72rem" onclick="attachVisitPhoto(${v})">
+          ${hasPhoto?L().photoAttachedLbl:L().photoAttachLbl}
+        </button>
+        ${hasPhoto?`<br><img src="${S.visitPhotos[v]}" style="max-width:80px;border-radius:8px;margin-top:4px">`:``}
+      </div>
       <div class="vbtns">
         <button class="mini ${st==='att'?'done':''}" onclick="setVisit(${v},'att')">${st==='att'?'✓ '+L().vAtt:L().vAtt}</button>
         <button class="mini ${st==='miss'?'miss':''}" onclick="setVisit(${v},'miss')">${L().vMiss}</button>
@@ -1020,6 +1315,109 @@ function addMed(){
 }
 function delMed(i){ S.meds.splice(i,1); save(); renderPreg(); }
 function setVisit(v,st){ S.visitSt[v]=S.visitSt[v]===st?'':st; save(); renderPreg(); }
+function attachVisitPhoto(wk){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*'; inp.capture='environment';
+  inp.onchange=()=>{
+    const f=inp.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=e=>{ S.visitPhotos[wk]=e.target.result; save(); renderPreg(); };
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+function saveBirthPrep(){
+  S.birthPrep.courses=document.getElementById('bpCourses').checked;
+  S.birthPrep.breathing=document.getElementById('bpBreathing').checked;
+  S.birthPrep.specialist=document.getElementById('bpSpecialist').checked;
+  save();
+}
+/* =========================================================
+   DOCTOR QUESTION MAP — rule-based AI
+========================================================= */
+const DRQ_RULES = {
+ru:[
+  {id:'scr_see',check:()=>S.scrHistory.slice(-3).some(r=>r.kind==='see'),
+   q:()=>'Стоит ли обратиться к специалисту по развитию?',
+   why:()=>'На скрининге выявлены навыки, которые пока не проявились'},
+  {id:'scr_watch',check:()=>S.scrHistory.slice(-3).some(r=>r.kind==='watch'),
+   q:()=>'Нужно ли повторить скрининг раньше следующего срока?',
+   why:()=>'Скрининг показал «Понаблюдайте» — полезно уточнить у врача'},
+  {id:'mood_low',check:()=>S.checkins.slice(-3).filter(c=>c.mood<=2).length>=2,
+   q:()=>'Как можно поддержать психологическое состояние?',
+   why:()=>'Отмечено сниженное настроение несколько недель подряд'},
+  {id:'sleep_bad',check:()=>S.checkins.slice(-3).filter(c=>c.sleep===1).length>=2,
+   q:()=>'Что можно сделать для улучшения качества сна?',
+   why:()=>'Плохой сон отмечен в нескольких последних чек-инах'},
+  {id:'pp_comp',check:()=>S.postpartum.compsDuring.filter(c=>c!=='none').length>0,
+   q:()=>'Все ли последствия осложнений в родах устранены?',
+   why:()=>'Зафиксированы осложнения во время родов'},
+  {id:'pp_after',check:()=>S.postpartum.compsAfter.filter(c=>c!=='none').length>0,
+   q:()=>'Нужно ли дополнительное лечение после осложнений послеродового периода?',
+   why:()=>'Зафиксированы послеродовые осложнения'},
+  {id:'chronic_hyper',check:()=>S.profile&&S.profile.chronic.includes('hyper'),
+   q:()=>'Нужна ли коррекция терапии давления?',
+   why:()=>'Повышенное давление в анкете'},
+  {id:'chronic_diabetes',check:()=>S.profile&&S.profile.chronic.includes('diabetes'),
+   q:()=>'Как контролировать сахар на текущем этапе?',
+   why:()=>'Диабет в анкете'},
+  {id:'genetic',check:()=>S.profile&&S.profile.heredity&&S.profile.heredity.genetic==='present',
+   q:()=>'Нужна ли генетическая консультация?',
+   why:()=>'В анкете указано наличие генетических заболеваний в семье'},
+  {id:'vac_missed',check:()=>S.children[S.activeChild||0]&&Object.values(S.children[S.activeChild||0].vacs||{}).filter(Boolean).length<2,
+   q:()=>'Все ли прививки по возрасту сделаны?',
+   why:()=>'Отмечено мало прививок в календаре'},
+  {id:'fallback',check:()=>true,
+   q:()=>'Всё ли идёт по плану? Есть ли что-то, что беспокоит?',
+   why:()=>'Стандартный вопрос каждого визита'}
+],
+uz:[
+  {id:'scr_see',check:()=>S.scrHistory.slice(-3).some(r=>r.kind==='see'),
+   q:()=>'Rivojlanish mutaxassisiga murojaat qilish kerakmi?',
+   why:()=>'Skriningda hali paydo bo\'lmagan ko\'nikmalar aniqlandi'},
+  {id:'scr_watch',check:()=>S.scrHistory.slice(-3).some(r=>r.kind==='watch'),
+   q:()=>'Skriningni rejalashtirilganidan ertaroq takrorlash kerakmi?',
+   why:()=>'Skrining «Kuzatib boring» natijasini ko\'rsatdi'},
+  {id:'mood_low',check:()=>S.checkins.slice(-3).filter(c=>c.mood<=2).length>=2,
+   q:()=>'Ruhiy holatni qanday qo\'llab-quvvatlash mumkin?',
+   why:()=>'Bir necha hafta davomida past kayfiyat qayd etildi'},
+  {id:'sleep_bad',check:()=>S.checkins.slice(-3).filter(c=>c.sleep===1).length>=2,
+   q:()=>'Uyqu sifatini yaxshilash uchun nima qilish mumkin?',
+   why:()=>'Bir necha so\'rovda yomon uyqu qayd etildi'},
+  {id:'pp_comp',check:()=>S.postpartum.compsDuring.filter(c=>c!=='none').length>0,
+   q:()=>'Tug\'ruqdagi asoratlarning barcha oqibatlari bartaraf etildimi?',
+   why:()=>'Tug\'ruq paytida asoratlar qayd etilgan'},
+  {id:'pp_after',check:()=>S.postpartum.compsAfter.filter(c=>c!=='none').length>0,
+   q:()=>'Tug\'ruqdan keyingi asoratlar uchun qo\'shimcha davolash kerakmi?',
+   why:()=>'Tug\'ruqdan keyingi asoratlar qayd etilgan'},
+  {id:'chronic_hyper',check:()=>S.profile&&S.profile.chronic.includes('hyper'),
+   q:()=>'Qon bosimi terapiyasini tuzatish kerakmi?',
+   why:()=>'Anketada yuqori qon bosimi ko\'rsatilgan'},
+  {id:'chronic_diabetes',check:()=>S.profile&&S.profile.chronic.includes('diabetes'),
+   q:()=>'Hozirgi bosqichda qandni qanday nazorat qilish mumkin?',
+   why:()=>'Anketada diabet ko\'rsatilgan'},
+  {id:'genetic',check:()=>S.profile&&S.profile.heredity&&S.profile.heredity.genetic==='present',
+   q:()=>'Genetik maslahat olish kerakmi?',
+   why:()=>'Anketada oiladagi genetik kasalliklar ko\'rsatilgan'},
+  {id:'vac_missed',check:()=>S.children[S.activeChild||0]&&Object.values(S.children[S.activeChild||0].vacs||{}).filter(Boolean).length<2,
+   q:()=>'Yoshga mos barcha emlashlar qilinganmi?',
+   why:()=>'Emlash taqvimida kam belgilar mavjud'},
+  {id:'fallback',check:()=>true,
+   q:()=>'Hammasi rejada ketmoqdami? Sizni tashvishlandirgan narsa bormi?',
+   why:()=>'Har bir tashrifning standart savoli'}
+]};
+function generateDrQ(){
+  const p=S.profile; if(!p){document.getElementById('drqList').innerHTML=`<div class="r-sub">${L().drqEmpty}</div>`;return;}
+  const rules=DRQ_RULES[S.lang];
+  const qs=[];
+  for(const r of rules){
+    try{if(r.check())qs.push({q:r.q(),why:r.why()});}catch(e){}
+    if(qs.length>=5)break;
+  }
+  document.getElementById('drqList').innerHTML=qs.map((item,i)=>
+    `<div class="drq-item"><div class="t-text">${i+1}. ${esc(item.q)}</div>
+     <div class="drq-reason">${L().drqReason} ${esc(item.why)}</div></div>`).join('');
+}
 /* =========================================================
    FIRST YEAR MODULE
 ========================================================= */
@@ -1030,12 +1428,14 @@ const MS={
 ru:["Малыш улыбается вам в ответ?","Держит голову лёжа на животе?","Следит глазами за игрушкой?","Переворачивается со спины на живот?","Сидит без поддержки?","Реагирует на своё имя?","Ползает?","Стоит у опоры?"],
 uz:["Chaqaloq sizga javoban jilmayadimi?","Qorinda yotib boshini tutadimi?","O'yinchoqni ko'zi bilan kuzatadimi?","Orqadan qoringa ag'dariladimi?","Suyanchiqsiz o'tiradimi?","Ismiga javob beradimi?","Emaklaydimi?","Tayanchda turadimi?"]};
 function addFeed(){
-  S.feeds.push({day:new Date().toDateString(),t:new Date().toLocaleTimeString(S.lang==='ru'?'ru-RU':'uz-UZ',{hour:'2-digit',minute:'2-digit'})});
+  const ch=curChild(); ch.feeds=ch.feeds||[];
+  ch.feeds.push({day:new Date().toDateString(),t:new Date().toLocaleTimeString(S.lang==='ru'?'ru-RU':'uz-UZ',{hour:'2-digit',minute:'2-digit'})});
   save(); renderBaby();
 }
 function remFeed(){
+  const ch=curChild(); ch.feeds=ch.feeds||[];
   const today=new Date().toDateString();
-  for(let i=S.feeds.length-1;i>=0;i--){ if(S.feeds[i].day===today){S.feeds.splice(i,1);break;} }
+  for(let i=ch.feeds.length-1;i>=0;i--){ if(ch.feeds[i].day===today){ch.feeds.splice(i,1);break;} }
   save(); renderBaby();
 }
 function polyline(svg, data, min, max, cls, labels){
@@ -1050,13 +1450,15 @@ function polyline(svg, data, min, max, cls, labels){
   return out;
 }
 function renderBaby(){
+  const ch=curChild();
+  renderChildTabs();
   const today=new Date().toDateString();
-  const feeds=S.feeds.filter(f=>f.day===today);
+  const feeds=(ch.feeds||[]).filter(f=>f.day===today);
   document.getElementById('feedN').textContent=feeds.length;
   document.getElementById('feedList').textContent=feeds.slice(-6).map(f=>f.t).join(' · ');
 
   const svg=document.getElementById('growChart');
-  const ws=S.growth.map(g=>g.w);
+  const ws=(ch.growth||[]).map(g=>g.w);
   if(ws.length>=2){
     const min=Math.min(...ws), max=Math.max(...ws);
     svg.innerHTML=`<line class="axis" x1="16" y1="114" x2="304" y2="114"/>`+
@@ -1065,34 +1467,203 @@ function renderBaby(){
     svg.innerHTML=`<text x="160" y="65" text-anchor="middle" style="font-size:11px">${L().growEmpty}</text>`;
   }
   const gl=document.getElementById('growList');
-  gl.innerHTML = S.growth.length? S.growth.slice(-4).reverse().map(g=>
+  gl.innerHTML = (ch.growth||[]).length? (ch.growth||[]).slice(-4).reverse().map(g=>
     `<div class="row"><div class="r-main">${g.w} ${L().kg} · ${g.h} ${L().cm}</div><div class="r-sub">${g.d}</div></div>`).join('')
     : `<div class="r-sub">${L().growEmpty}</div>`;
 
+  /* birth data fields */
+  if(ch.birthData){
+    if(ch.birthData.w)document.getElementById('bW').value=ch.birthData.w;
+    if(ch.birthData.h)document.getElementById('bH').value=ch.birthData.h;
+  }
+
   document.getElementById('vacList').innerHTML=VAC[S.lang].map((v,i)=>{
-    const done=!!S.vacs[i];
+    const done=!!(ch.vacs||{})[i];
     return `<div class="row"><div><div class="r-main">${v[0]}</div><div class="r-sub">${v[1]}</div></div>
     <button class="mini ${done?'done':''}" onclick="toggleVac(${i})">${done?L().vacDone:L().vacNo}</button></div>`;
   }).join('');
-  const q=MS[S.lang][S.ms.idx % MS[S.lang].length];
+
+  ch.ms=ch.ms||{idx:0,log:{}};
+  const q=MS[S.lang][ch.ms.idx % MS[S.lang].length];
   document.getElementById('msQ').textContent=q;
   document.getElementById('msNote').innerHTML='';
+
+  /* restore chronic chips */
+  (ch.chronic||[]).forEach(k=>{
+    const el=document.querySelector(`#childChronRow [data-k="${k}"]`);
+    if(el)el.classList.add('on');
+  });
+
+  /* restore birth comp chips */
+  (ch.birthComps||[]).forEach(k=>{
+    birthCompSel.add(k);
+    const el=document.querySelector(`#birthCompRow [data-k="${k}"]`);
+    if(el)el.classList.add('on');
+  });
+  document.getElementById('birthCompTextIn').value=ch.birthCompText||'';
+
+  renderIllnessList();
+  renderChildSpecList();
+  renderCustomMetrics();
 }
-function toggleVac(i){ S.vacs[i]=!S.vacs[i]; save(); renderBaby(); }
+function toggleVac(i){
+  const ch=curChild();
+  ch.vacs=ch.vacs||{};
+  ch.vacs[i]=!ch.vacs[i];
+  save(); renderBaby();
+}
 function addGrowth(){
+  const ch=curChild();
   const w=+document.getElementById('gW').value, h=+document.getElementById('gH').value;
   if(!w||!h)return;
-  S.growth.push({w,h,d:fmtD(Date.now())});
+  ch.growth=ch.growth||[];
+  ch.growth.push({w,h,d:fmtD(Date.now())});
   save(); document.getElementById('gW').value='';document.getElementById('gH').value='';
   renderBaby();
 }
 function answerMs(a){
-  S.ms.log[S.ms.idx]=a;
+  const ch=curChild();
+  ch.ms=ch.ms||{idx:0,log:{}};
+  ch.ms.log[ch.ms.idx]=a;
   const ok=a==='yes';
   document.getElementById('msNote').innerHTML=
     `<div class="note ${ok?'calm':'soft'}" style="margin:12px 0 0">${ok?L().msNoteOk:L().msNoteWait}</div>`;
-  if(ok)S.ms.idx++;
+  if(ok)ch.ms.idx++;
   save();
+}
+/* =========================================================
+   MULTI-CHILD MANAGEMENT
+========================================================= */
+function curChild(){ return S.children[S.activeChild||0]||(S.children[0]={}); }
+function addChild(){
+  const name=prompt(L().childNameLbl+' / '+L().childSurnameLbl)||'';
+  S.children.push({
+    name:name.split(' ')[0]||'Малыш',surname:name.split(' ')[1]||'',gender:'',
+    feeds:[],growth:[],vacs:{},ms:{idx:0,log:{}},
+    birthData:{w:'',h:'',d:''},birthComps:[],birthCompText:'',
+    illnesses:[],chronic:[],specialists:[],customMetrics:[]
+  });
+  S.activeChild=S.children.length-1;
+  save(); renderBaby();
+}
+function switchChild(i){ S.activeChild=i; save(); renderBaby(); }
+function renderChildTabs(){
+  document.getElementById('childTabs').innerHTML=S.children.map((c,i)=>{
+    const lbl=c.name||(L().childNameLbl+' '+(i+1));
+    return `<button class="child-tab ${i===S.activeChild?'on':''}" onclick="switchChild(${i})">${esc(lbl)}</button>`;
+  }).join('');
+}
+function saveBirthData(){
+  const ch=curChild();
+  const w=+document.getElementById('bW').value, h=+document.getElementById('bH').value;
+  const d=document.getElementById('bD').value;
+  if(!w&&!h&&!d)return;
+  ch.birthData={w:w||ch.birthData.w, h:h||ch.birthData.h, d:d||ch.birthData.d};
+  /* prepend birth data point to growth if weight given */
+  if(w&&d){
+    const label=d; // ISO date
+    const already=ch.growth.find(g=>g.d===fmtD(d));
+    if(!already&&h) ch.growth.unshift({w,h,d:fmtD(d)});
+  }
+  save();
+  document.getElementById('birthDataNote').textContent=L().ppSaved||'Сохранено ✓';
+  setTimeout(()=>{const el=document.getElementById('birthDataNote');if(el)el.textContent='';},2000);
+  renderBaby();
+}
+function saveChildChronic(){
+  const ch=curChild();
+  ch.chronic=[...document.querySelectorAll('#childChronRow .chip.on')].map(b=>b.dataset.k);
+  save();
+  document.getElementById('childChronNote').textContent=L().ppSaved||'Сохранено ✓';
+  setTimeout(()=>{const el=document.getElementById('childChronNote');if(el)el.textContent='';},2000);
+}
+const birthCompSel=new Set();
+(function(){
+  document.getElementById('birthCompRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    if(b.dataset.k==='none'){birthCompSel.clear();birthCompSel.add('none');}
+    else{birthCompSel.delete('none');b.classList.contains('on')?birthCompSel.delete(b.dataset.k):birthCompSel.add(b.dataset.k);}
+    document.querySelectorAll('#birthCompRow .chip').forEach(c=>c.classList.toggle('on',birthCompSel.has(c.dataset.k)));
+  });
+})();
+function saveBirthComps(){
+  const ch=curChild();
+  ch.birthComps=[...birthCompSel];
+  ch.birthCompText=document.getElementById('birthCompTextIn').value.trim();
+  save();
+  document.getElementById('birthCompNote').textContent=L().ppSaved||'Сохранено ✓';
+  setTimeout(()=>{const el=document.getElementById('birthCompNote');if(el)el.textContent='';},2000);
+}
+const illChipSel=new Set();
+(function(){
+  document.getElementById('illnessChipRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    b.classList.toggle('on');
+    b.classList.contains('on')?illChipSel.add(b.dataset.k):illChipSel.delete(b.dataset.k);
+  });
+})();
+function addIllness(){
+  const ch=curChild();
+  const chips=[...illChipSel];
+  const otherName=document.getElementById('illOtherName').value.trim();
+  const date=document.getElementById('illDateIn').value;
+  if(!chips.length&&!otherName)return;
+  const keys=chips.includes('other')&&otherName?[...chips.filter(k=>k!=='other'),otherName]:
+    chips.length?chips:[otherName];
+  keys.forEach(k=>{ ch.illnesses.push({name:k,date:date?fmtD(date):''}); });
+  illChipSel.clear();
+  document.querySelectorAll('#illnessChipRow .chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('illOtherName').value='';
+  document.getElementById('illDateIn').value='';
+  save(); renderIllnessList();
+}
+function delIllness(i){ const ch=curChild(); ch.illnesses.splice(i,1); save(); renderIllnessList(); }
+function renderIllnessList(){
+  const ch=curChild();
+  document.getElementById('illnessList').innerHTML=
+    (ch.illnesses||[]).map((ill,i)=>`<div class="row">
+      <div><div class="r-main">${esc(L()['ill'+ill.name]||ill.name)}</div>${ill.date?`<div class="r-sub">${ill.date}</div>`:''}</div>
+      <button class="mini" onclick="delIllness(${i})">✕</button></div>`).join('')||
+    `<div class="r-sub">${L().histEmpty||'Пока нет записей'}</div>`;
+}
+function addChildSpec(){
+  const ch=curChild();
+  const type=document.getElementById('csTypeIn').value.trim();
+  const name=document.getElementById('csNameIn').value.trim();
+  if(!type&&!name)return;
+  ch.specialists.push({type,name});
+  document.getElementById('csTypeIn').value='';
+  document.getElementById('csNameIn').value='';
+  save(); renderChildSpecList();
+}
+function delChildSpec(i){ const ch=curChild(); ch.specialists.splice(i,1); save(); renderChildSpecList(); }
+function renderChildSpecList(){
+  const ch=curChild();
+  document.getElementById('childSpecList').innerHTML=
+    (ch.specialists||[]).map((sp,i)=>`<div class="row">
+      <div><div class="r-main">${esc(sp.type)}</div><div class="r-sub">${esc(sp.name)}</div></div>
+      <button class="mini" onclick="delChildSpec(${i})">✕</button></div>`).join('')||
+    `<div class="r-sub">${L().histEmpty||'Пока нет записей'}</div>`;
+}
+function addCustomMetric(){
+  const ch=curChild();
+  const name=document.getElementById('cmName').value.trim();
+  const value=document.getElementById('cmValue').value.trim();
+  const unit=document.getElementById('cmUnit').value.trim();
+  const date=document.getElementById('cmDate').value;
+  if(!name||!value)return;
+  ch.customMetrics.push({name,value,unit,date:date?fmtD(date):fmtD(Date.now())});
+  ['cmName','cmValue','cmUnit','cmDate'].forEach(id=>document.getElementById(id).value='');
+  save(); renderCustomMetrics();
+}
+function delCustomMetric(i){ const ch=curChild(); ch.customMetrics.splice(i,1); save(); renderCustomMetrics(); }
+function renderCustomMetrics(){
+  const ch=curChild();
+  document.getElementById('customMetricsList').innerHTML=
+    (ch.customMetrics||[]).map((m,i)=>`<div class="row">
+      <div><div class="r-main">${esc(m.name)}: ${esc(m.value)}${m.unit?' '+esc(m.unit):''}</div><div class="r-sub">${m.date}</div></div>
+      <button class="mini" onclick="delCustomMetric(${i})">✕</button></div>`).join('')||
+    `<div class="r-sub">${L().histEmpty||'Пока нет записей'}</div>`;
 }
 /* =========================================================
    SCREENING MODULE — per-month adapted question banks
@@ -1192,6 +1763,82 @@ function renderScrHist(){
 }
 function toggleScrDetail(i){ const el=document.getElementById('scrD'+i); if(el)el.classList.toggle('hide'); }
 /* =========================================================
+   POSTPARTUM RECOVERY
+========================================================= */
+(function(){
+  document.getElementById('ppBirthTypeRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    document.querySelectorAll('#ppBirthTypeRow .chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+  });
+  const ppIntervSel=new Set();
+  document.getElementById('ppIntervRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    if(b.dataset.k==='none'){ppIntervSel.clear();ppIntervSel.add('none');}
+    else{ppIntervSel.delete('none');b.classList.contains('on')?ppIntervSel.delete(b.dataset.k):ppIntervSel.add(b.dataset.k);}
+    document.querySelectorAll('#ppIntervRow .chip').forEach(c=>c.classList.toggle('on',ppIntervSel.has(c.dataset.k)));
+  });
+  const ppCompDurSel=new Set();
+  document.getElementById('ppCompDuringRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    if(b.dataset.k==='none'){ppCompDurSel.clear();ppCompDurSel.add('none');}
+    else{ppCompDurSel.delete('none');b.classList.contains('on')?ppCompDurSel.delete(b.dataset.k):ppCompDurSel.add(b.dataset.k);}
+    document.querySelectorAll('#ppCompDuringRow .chip').forEach(c=>c.classList.toggle('on',ppCompDurSel.has(c.dataset.k)));
+  });
+  const ppCompAftSel=new Set();
+  document.getElementById('ppCompAfterRow').addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    if(b.dataset.k==='none'){ppCompAftSel.clear();ppCompAftSel.add('none');}
+    else{ppCompAftSel.delete('none');b.classList.contains('on')?ppCompAftSel.delete(b.dataset.k):ppCompAftSel.add(b.dataset.k);}
+    document.querySelectorAll('#ppCompAfterRow .chip').forEach(c=>c.classList.toggle('on',ppCompAftSel.has(c.dataset.k)));
+  });
+  window._ppIntervSel=ppIntervSel;
+  window._ppCompDurSel=ppCompDurSel;
+  window._ppCompAftSel=ppCompAftSel;
+})();
+function savePostpartum(){
+  const bt=document.querySelector('#ppBirthTypeRow .chip.on');
+  S.postpartum={
+    birthType:bt?bt.dataset.v:'',
+    interventions:[...window._ppIntervSel],
+    compsDuring:[...window._ppCompDurSel],
+    compsAfter:[...window._ppCompAftSel],
+    compsAfterOther:document.getElementById('ppAfterOther').value.trim()
+  };
+  save();
+  document.getElementById('ppSavedNote').textContent=L().ppSaved;
+  setTimeout(()=>{const el=document.getElementById('ppSavedNote');if(el)el.textContent='';},2000);
+}
+function renderPostpartum(){
+  const pp=S.postpartum;
+  if(pp.birthType){
+    const btn=document.querySelector(`#ppBirthTypeRow [data-v="${pp.birthType}"]`);
+    if(btn){document.querySelectorAll('#ppBirthTypeRow .chip').forEach(c=>c.classList.remove('on'));btn.classList.add('on');}
+  }
+  (pp.interventions||[]).forEach(k=>{window._ppIntervSel.add(k);const el=document.querySelector(`#ppIntervRow [data-k="${k}"]`);if(el)el.classList.add('on');});
+  (pp.compsDuring||[]).forEach(k=>{window._ppCompDurSel.add(k);const el=document.querySelector(`#ppCompDuringRow [data-k="${k}"]`);if(el)el.classList.add('on');});
+  (pp.compsAfter||[]).forEach(k=>{window._ppCompAftSel.add(k);const el=document.querySelector(`#ppCompAfterRow [data-k="${k}"]`);if(el)el.classList.add('on');});
+  if(pp.compsAfterOther)document.getElementById('ppAfterOther').value=pp.compsAfterOther;
+}
+/* =========================================================
+   SENTIMENT DETECTION — AI #2
+========================================================= */
+const BURNOUT_KW={
+  ru:['устала','измотана','не могу','тяжело','плохо','грустно','одна','не справляюсь','выгорела','сил нет','нет сил','плакала','рыдала','кошмар','депрессия','тоска','бессилие','невозможно','изнемогаю'],
+  uz:['charchadim','og\'ir','chidolmayapman','yolg\'iz','yordam','yig\'ladim','imkon yo\'q','depressiya','kuchim yo\'q','dahshat','qiyin','holsizlik','ezilmoqda']
+};
+function sentimentScore(text){
+  if(!text)return 0;
+  const kws=BURNOUT_KW[S.lang]||BURNOUT_KW.ru;
+  const lower=text.toLowerCase();
+  return kws.filter(kw=>lower.includes(kw)).length;
+}
+function shouldShowSentimentSupport(){
+  const texts=(S.checkinTexts||[]).slice(-3).filter(t=>t&&t.trim());
+  if(texts.length<2)return false;
+  return texts.filter(t=>sentimentScore(t)>0).length>=2;
+}
+/* =========================================================
    MAMA MODULE — check-in chart, cycle tracker, support
 ========================================================= */
 let ci={mood:0,sleep:0,body:0};
@@ -1206,9 +1853,13 @@ bindScale('ciMoodRow','mood');bindScale('ciSleepRow','sleep');bindScale('ciBodyR
 function weekStamp(){const d=new Date();const o=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-'+Math.ceil(((d-o)/864e5+o.getDay()+1)/7);}
 function saveCheckin(){
   if(!ci.mood||!ci.sleep||!ci.body)return;
+  const text=(document.getElementById('ciText')||{}).value||'';
   S.checkins.push({...ci,wk:weekStamp(),d:fmtD(Date.now())});
+  S.checkinTexts=S.checkinTexts||[];
+  S.checkinTexts.push(text.trim());
   save(); ci={mood:0,sleep:0,body:0};
   document.querySelectorAll('#ciCard .on').forEach(x=>x.classList.remove('on'));
+  const ta=document.getElementById('ciText'); if(ta)ta.value='';
   renderMama(true);
 }
 function renderCiChart(){
@@ -1265,6 +1916,15 @@ function renderMama(justSaved){
   const flag=aiMamaPattern(S.checkins);
   document.getElementById('mamaSupport').innerHTML = flag?
     `<div class="note rose"><b>${L().supportCard[0]}</b>${L().supportCard[1]}</div>`:'';
+  /* sentiment detection */
+  const sentEl=document.getElementById('mamaSentiment');
+  if(sentEl){
+    sentEl.innerHTML=shouldShowSentimentSupport()?
+      `<div class="sentiment-cta">${L().sentimentCard}
+        <button class="btn teal" style="margin-top:10px" onclick="go('spec')">${L().sentimentBtn}</button>
+      </div>`:'';
+  }
+  renderPostpartum();
   renderCiChart();
   const done=S.checkins.some(c=>c.wk===weekStamp());
   const card=document.getElementById('ciCard');
