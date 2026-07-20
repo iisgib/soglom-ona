@@ -353,12 +353,8 @@ input:checked+.slider:before{transform:translateX(20px)}
 
       <div class="card">
         <div class="eyebrow" data-i18n="wombEB">Малыш на этой неделе</div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:6px 0">
-          <div class="womb-stage" style="margin:0;flex:none"><div class="womb-3d" id="womb"></div></div>
-          <img id="wkSizeImg" src="" alt="" style="display:none;width:76px;height:76px;object-fit:contain;border-radius:50%;background:var(--anor-soft);padding:6px;border:2px solid var(--anor-soft)">
-        </div>
+        <div id="wkImgWrap" class="womb-stage"><div class="womb-3d" id="womb"></div></div>
         <div style="text-align:center">
-          <div class="week-note" id="wkFruit" style="font-weight:700"></div>
           <div class="week-note" id="wkSize"></div>
         </div>
         <div style="display:flex;align-items:center;gap:14px;margin-top:10px">
@@ -730,6 +726,7 @@ input:checked+.slider:before{transform:translateX(20px)}
       <div class="card" id="profilesList"></div>
       <button class="btn primary" style="margin-top:10px" onclick="addProfile()" data-i18n="profilesNewBtn">+ Новый профиль</button>
       <button class="btn ghost" style="margin-top:10px" onclick="logout()" data-i18n="profileLogout">Выйти из профиля</button>
+      <button class="btn ghost" style="margin-top:10px;border-color:var(--anor);color:var(--anor)" onclick="deleteAccount()" data-i18n="deleteAccountLbl">Удалить аккаунт</button>
     </section>
 
     <!-- ===== PHOTO CHECK ===== -->
@@ -743,10 +740,7 @@ input:checked+.slider:before{transform:translateX(20px)}
           <button class="chip on" data-v="skin" data-i18n="photoCheckTypeSkin">Кожа / сыпь</button>
           <button class="chip" data-v="stool" data-i18n="photoCheckTypeStool">Стул ребёнка</button>
         </div>
-        <div class="photo-actions" style="margin-top:12px">
-          <button class="btn primary" style="flex:1;padding:13px" onclick="startPhotoCheck('camera')" data-i18n="photoCheckCamera">📷 Камера</button>
-          <button class="btn ghost" style="flex:1;padding:13px" onclick="startPhotoCheck('gallery')" data-i18n="photoCheckGallery">🖼 Галерея</button>
-        </div>
+        <button class="btn primary" style="margin-top:12px" onclick="startPhotoCheck()" data-i18n="photoAttachLbl">Прикрепить фото</button>
         <div id="photoResult" style="margin-top:10px"></div>
       </div>
       <div class="card">
@@ -918,10 +912,10 @@ ru:{
  profilesNewBtn:"+ Новый профиль", profileLogout:"Выйти из профиля",
  profileSwitchTo:"Войти", profileActive:"(активен)", profileDelete:"Удалить",
  profileConfirmDel:"Удалить профиль? Данные останутся и их можно восстановить.",
+ deleteAccountLbl:"Удалить аккаунт", deleteAccountConfirm:"Это действие необратимо. Все данные будут удалены без возможности восстановления. Продолжить?",
  photoCheckT:"Проверка по фото", photoCheckSub:"Загрузите фото — ИИ оценит состояние",
  photoCheckTypeLbl:"Что проверить?",
  photoCheckTypeSkin:"Кожа / сыпь", photoCheckTypeStool:"Стул ребёнка",
- photoCheckCamera:"📷 Камера", photoCheckGallery:"🖼 Галерея",
  photoCheckHistT:"История проверок", photoCheckEmpty:"Проверок пока нет.",
  photoCheckOk:"Выглядит нормально — явных отклонений не обнаружено.",
  photoCheckAtt:"Стоит показать врачу. Это не диагноз, просто ИИ заметил кое-что необычное.",
@@ -1061,10 +1055,10 @@ uz:{
  profilesNewBtn:"+ Yangi profil", profileLogout:"Profildan chiqish",
  profileSwitchTo:"Kirish", profileActive:"(faol)", profileDelete:"O'chirish",
  profileConfirmDel:"Profilni o'chirasizmi? Ma'lumotlar saqlanib qoladi.",
+ deleteAccountLbl:"Akkauntni o'chirish", deleteAccountConfirm:"Bu amal qaytarib bo'lmaydi. Barcha ma'lumotlar butunlay o'chiriladi. Davom etasizmi?",
  photoCheckT:"Rasm orqali tekshirish", photoCheckSub:"Rasm yuklang — AI holatni baholaydi",
  photoCheckTypeLbl:"Nima tekshirish?",
  photoCheckTypeSkin:"Teri / toshma", photoCheckTypeStool:"Bolaning axlati",
- photoCheckCamera:"📷 Kamera", photoCheckGallery:"🖼 Galereya",
  photoCheckHistT:"Tekshiruvlar tarixi", photoCheckEmpty:"Hali tekshiruvlar yo'q.",
  photoCheckOk:"Hammasi normal ko'rinadi — aniq og'ishmalar yo'q.",
  photoCheckAtt:"Shifokorga ko'rsatgan ma'qul. Bu tashxis emas — AI shunchaki nimadir g'ayrioddiy ko'rindi.",
@@ -1331,24 +1325,27 @@ function wombSVG(w){
   <ellipse cx="80" cy="55" rx="34" ry="18" fill="#fff" opacity=".18"/>
 </svg>`;
 }
-const WEEK_IMAGES={6:'week-06',10:'week-10',14:'week-14',18:'week-18',22:'week-22',27:'week-27',32:'week-32',36:'week-36',42:'week-42'};
-function imageForWeek(w){
-  let best=null; for(const k of Object.keys(WEEK_IMAGES)){if(w>=+k)best=WEEK_IMAGES[k];}
-  return best;
+/* Baby reference images: assets/baby-week-{N}.png — exact week or nearest below */
+const BABY_IMG_WEEKS=[12]; /* list of weeks with actual PNG files */
+function babyImgForWeek(w){
+  let best=null;
+  for(const k of BABY_IMG_WEEKS){ if(w>=k)best=k; }
+  return best?`assets/baby-week-${best}.png`:null;
 }
 function renderPreg(){
   const p=S.profile; if(!p)return;
   const w=p.stage==='preg'?p.week:12;
   document.getElementById('wkNum').textContent=w;
-  document.getElementById('womb').innerHTML=wombSVG(w);
-  /* fruit size image alongside womb */
-  const imgFile=imageForWeek(w);
-  const sizeImg=document.getElementById('wkSizeImg');
-  if(sizeImg){
-    sizeImg.style.display=imgFile?'block':'none';
-    if(imgFile)sizeImg.src=`assets/pregnancy-week-images/${imgFile}.svg`;
+  /* Show real baby image if available, otherwise fall back to womb SVG animation */
+  const imgPath=babyImgForWeek(w);
+  const wrap=document.getElementById('wkImgWrap');
+  if(imgPath){
+    wrap.innerHTML=`<img src="${imgPath}" alt="baby week ${w}" class="womb-baby" style="max-width:220px;max-height:190px;object-fit:contain;border-radius:16px">`;
+  } else {
+    wrap.innerHTML=`<div class="womb-3d" id="womb">${wombSVG(w)}</div>`;
   }
-  document.getElementById('wkFruit').textContent=L().fruit(fruitFor(w));
+  /* keep #womb reference usable for SVG path (only matters when fallback is shown) */
+  if(!imgPath){}
   const sz=sizeFor(w);
   document.getElementById('wkSize').textContent=L().sizeTxt(sz[0],sz[1].replace('кг',L().kg).replace(/г$/,L().g));
   const pct=Math.min(100,Math.round(w/40*100));
@@ -1447,22 +1444,8 @@ function addMed(){
 function delMed(i){ S.meds.splice(i,1); save(); renderPreg(); }
 function setVisit(v,st){ S.visitSt[v]=S.visitSt[v]===st?'':st; save(); renderPreg(); }
 function attachVisitPhoto(wk){
-  /* show inline choice panel; buttons call pickPhoto() */
-  const container=document.getElementById('visitPhoto_'+wk);
-  if(container){
-    container.innerHTML=`<div class="photo-actions" style="margin-top:6px">
-      <button class="mini" onclick="pickPhoto(${wk},'camera')" data-i18n="photoCheckCamera">📷 Камера</button>
-      <button class="mini" onclick="pickPhoto(${wk},'gallery')" data-i18n="photoCheckGallery">🖼 Галерея</button>
-    </div>`;
-    applyLang();
-  } else {
-    pickPhoto(wk,'gallery');
-  }
-}
-function pickPhoto(wk,source){
   const inp=document.createElement('input');
   inp.type='file'; inp.accept='image/*';
-  if(source==='camera')inp.capture='environment';
   inp.onchange=()=>{
     const f=inp.files[0]; if(!f)return;
     const r=new FileReader();
@@ -2306,6 +2289,24 @@ function deleteProfile(id){
   if(S.activeProfileId===id)S.activeProfileId=S.allProfiles[0]&&S.allProfiles[0].id||null;
   save(); renderProfiles();
 }
+function deleteAccount(){
+  if(!confirm(L().deleteAccountConfirm))return;
+  /* Remove current profile from allProfiles list */
+  if(S.activeProfileId)S.allProfiles=S.allProfiles.filter(p=>p.id!==S.activeProfileId);
+  /* Wipe every field tied to this profile — preserves lang and the other profiles list */
+  S.profile=null; S.activeProfileId=null;
+  S.tasks={}; S.meds=[]; S.remDone={meds:{}}; S.visitSt={}; S.visitPhotos={};
+  S.children=[]; S.activeChild=0;
+  S.feeds=[]; S.growth=[]; S.vacs={}; S.ms={idx:0,log:{}};
+  S.checkins=[]; S.checkinTexts=[]; S.cycles=[]; S.cycLen=28;
+  S.scrHistory=[]; S.specRates={}; S.chat={};
+  S.postpartum={birthType:'',interventions:[],compsDuring:[],compsAfter:[],compsAfterOther:''};
+  S.birthPrep={courses:false,breathing:false,specialist:false};
+  S.photoChecks=[];
+  save();
+  document.querySelector('nav').style.display='none';
+  go('onb1');
+}
 
 /* =========================================================
    PHOTO CHECK — AI symptom photo analysis (mock)
@@ -2320,10 +2321,9 @@ function initPhotoTypeRow(){
     b.classList.add('on');
   });
 }
-function startPhotoCheck(source){
+function startPhotoCheck(){
   const inp=document.createElement('input');
   inp.type='file'; inp.accept='image/*';
-  if(source==='camera')inp.capture='environment';
   inp.onchange=()=>{
     const f=inp.files[0]; if(!f)return;
     const typeChip=document.querySelector('#photoTypeRow .chip.on');
