@@ -176,6 +176,21 @@ input:checked+.slider:before{transform:translateX(20px)}
 .drq-reason{font-size:.78rem;color:var(--ink-60);margin-top:3px}
 /* sentiment support */
 .sentiment-cta{background:var(--anor-soft);border-radius:16px;padding:14px 16px;margin-top:12px;font-size:.9rem;font-weight:600;line-height:1.45;color:#7C2136}
+/* week size image */
+.size-img-wrap{display:flex;align-items:center;justify-content:center;gap:18px;margin:6px 0 8px}
+.size-img-wrap img{width:80px;height:80px;border-radius:50%;object-fit:contain;background:var(--anor-soft);padding:6px;border:2px solid var(--anor-soft)}
+/* photo action sheet */
+.photo-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+/* profile strip */
+.profile-strip{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--line);margin-top:10px}
+.profile-strip .r-sub{font-size:.78rem}
+/* photo check */
+.photo-result-badge{display:inline-block;border-radius:99px;padding:4px 14px;font:800 .82rem 'Nunito';margin-bottom:8px}
+.photo-result-badge.ok{background:var(--rishtan-soft);color:#1F5560}
+.photo-result-badge.att{background:var(--anor-soft);color:#7C2136}
+/* voice button */
+.mic-btn{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;font-size:1.1rem;cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-family:'Nunito';font-size:.8rem;font-weight:700}
+.mic-btn.active{background:var(--anor);border-color:var(--anor);color:#fff}
 </style>
 </head>
 <body>
@@ -192,9 +207,14 @@ input:checked+.slider:before{transform:translateX(20px)}
       </svg>
       <h1 data-i18n="app">Соғлом Она<span data-i18n="tag">от планирования до 3 лет</span></h1>
     </div>
-    <div class="lang" role="group" aria-label="Til / Язык">
-      <button id="langRu" class="on" onclick="setLang('ru')">РУ</button>
-      <button id="langUz" onclick="setLang('uz')">UZ</button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="profileBtn" onclick="go('profiles')" style="border:0;background:none;cursor:pointer;color:var(--ink-60);display:flex;align-items:center;padding:4px" title="Профиль">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </button>
+      <div class="lang" role="group" aria-label="Til / Язык">
+        <button id="langRu" class="on" onclick="setLang('ru')">РУ</button>
+        <button id="langUz" onclick="setLang('uz')">UZ</button>
+      </div>
     </div>
   </header>
   <main id="main">
@@ -333,7 +353,10 @@ input:checked+.slider:before{transform:translateX(20px)}
 
       <div class="card">
         <div class="eyebrow" data-i18n="wombEB">Малыш на этой неделе</div>
-        <div class="womb-stage"><div class="womb-3d" id="womb"></div></div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:6px 0">
+          <div class="womb-stage" style="margin:0;flex:none"><div class="womb-3d" id="womb"></div></div>
+          <img id="wkSizeImg" src="" alt="" style="display:none;width:76px;height:76px;object-fit:contain;border-radius:50%;background:var(--anor-soft);padding:6px;border:2px solid var(--anor-soft)">
+        </div>
         <div style="text-align:center">
           <div class="week-note" id="wkFruit" style="font-weight:700"></div>
           <div class="week-note" id="wkSize"></div>
@@ -354,8 +377,10 @@ input:checked+.slider:before{transform:translateX(20px)}
         <h3 id="clTitle"></h3>
         <div id="checklist"></div>
         <label class="q" data-i18n="medsQ">Лекарства и витамины, которые вы принимаете</label>
-        <div style="display:flex;gap:8px">
-          <input type="text" id="medIn" data-i18n-ph="phMed" placeholder="Например, фолиевая кислота">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input type="text" id="medIn" data-i18n-ph="phMed" placeholder="Например, фолиевая кислота" style="flex:2;min-width:120px">
+          <input type="number" id="medFreq" min="1" max="6" value="1" style="width:52px;flex:none" inputmode="numeric" title="Раз в день">
+          <span class="r-sub" data-i18n="medFreqLbl" style="flex:none">×/день</span>
           <button class="mini" onclick="addMed()" data-i18n="add">Записать</button>
         </div>
         <div id="medList" style="margin-top:6px"></div>
@@ -640,6 +665,8 @@ input:checked+.slider:before{transform:translateX(20px)}
         </div>
         <h3 data-i18n="ciTextLbl" style="margin-top:14px">Как прошла неделя?</h3>
         <textarea id="ciText" rows="3" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:14px;font:600 .95rem 'Nunito';resize:vertical" data-i18n-ph="ciTextPh" placeholder="Напишите немного — это только для вас"></textarea>
+        <button class="mic-btn" id="micBtn" onclick="toggleVoice()">🎤 <span id="micLabel" data-i18n="micStart">Запись голоса</span></button>
+        <div id="voiceStatus" class="week-note" style="margin-top:4px"></div>
         <button class="btn primary" style="margin-top:14px" onclick="saveCheckin()" data-i18n="ciSave">Сохранить чек-ин</button>
       </div>
 
@@ -693,6 +720,39 @@ input:checked+.slider:before{transform:translateX(20px)}
       <h2 data-i18n="mSpec">Специалисты рядом</h2>
       <p class="sub" data-i18n="mSpecSub">Оценки и отзывы других мам</p>
       <div id="specList"></div>
+    </section>
+
+    <!-- ===== PROFILES ===== -->
+    <section class="view" id="v-profiles">
+      <button class="backlink" onclick="go('home')">← <span data-i18n="toHome">На главную</span></button>
+      <h2 data-i18n="profilesT">Профили</h2>
+      <p class="sub" data-i18n="profilesSub">Несколько пользователей на одном устройстве</p>
+      <div class="card" id="profilesList"></div>
+      <button class="btn primary" style="margin-top:10px" onclick="addProfile()" data-i18n="profilesNewBtn">+ Новый профиль</button>
+      <button class="btn ghost" style="margin-top:10px" onclick="logout()" data-i18n="profileLogout">Выйти из профиля</button>
+    </section>
+
+    <!-- ===== PHOTO CHECK ===== -->
+    <section class="view" id="v-photo">
+      <button class="backlink" onclick="go('home')">← <span data-i18n="toHome">На главную</span></button>
+      <h2 data-i18n="photoCheckT">Проверка по фото</h2>
+      <p class="sub" data-i18n="photoCheckSub">Загрузите фото — ИИ оценит состояние</p>
+      <div class="card">
+        <label class="q" data-i18n="photoCheckTypeLbl">Что проверить?</label>
+        <div class="chiprow" id="photoTypeRow">
+          <button class="chip on" data-v="skin" data-i18n="photoCheckTypeSkin">Кожа / сыпь</button>
+          <button class="chip" data-v="stool" data-i18n="photoCheckTypeStool">Стул ребёнка</button>
+        </div>
+        <div class="photo-actions" style="margin-top:12px">
+          <button class="btn primary" style="flex:1;padding:13px" onclick="startPhotoCheck('camera')" data-i18n="photoCheckCamera">📷 Камера</button>
+          <button class="btn ghost" style="flex:1;padding:13px" onclick="startPhotoCheck('gallery')" data-i18n="photoCheckGallery">🖼 Галерея</button>
+        </div>
+        <div id="photoResult" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <div class="eyebrow" data-i18n="photoCheckHistT">История проверок</div>
+        <div id="photoHistList"></div>
+      </div>
     </section>
   </main>
 
@@ -852,7 +912,22 @@ ru:{
  drqEmpty:"Нет предстоящих визитов. Запланируйте визит в разделе «Беременность».",
  ciTextLbl:"Как прошла неделя?",ciTextPh:"Напишите немного — это только для вас",
  sentimentCard:"Похоже, эта неделя была особенно тяжёлой. Хотите поговорить с кем-то? Вот специалисты рядом.",
- sentimentBtn:"Найти специалиста"
+ sentimentBtn:"Найти специалиста",
+ micStart:"🎤 Запись голоса", micStop:"⏹ Остановить", micListening:"Слушаю…",
+ profilesT:"Профили", profilesSub:"Несколько пользователей на одном устройстве",
+ profilesNewBtn:"+ Новый профиль", profileLogout:"Выйти из профиля",
+ profileSwitchTo:"Войти", profileActive:"(активен)", profileDelete:"Удалить",
+ profileConfirmDel:"Удалить профиль? Данные останутся и их можно восстановить.",
+ photoCheckT:"Проверка по фото", photoCheckSub:"Загрузите фото — ИИ оценит состояние",
+ photoCheckTypeLbl:"Что проверить?",
+ photoCheckTypeSkin:"Кожа / сыпь", photoCheckTypeStool:"Стул ребёнка",
+ photoCheckCamera:"📷 Камера", photoCheckGallery:"🖼 Галерея",
+ photoCheckHistT:"История проверок", photoCheckEmpty:"Проверок пока нет.",
+ photoCheckOk:"Выглядит нормально — явных отклонений не обнаружено.",
+ photoCheckAtt:"Стоит показать врачу. Это не диагноз, просто ИИ заметил кое-что необычное.",
+ photoCheckAnalyzing:"Анализирую фото…",
+ modPhoto:["Проверка по фото","кожа и стул — анализ ИИ"],
+ medFreqLbl:"×/день"
 },
 uz:{
  app:"Sog'lom Ona", tag:"rejalashtirishdan 3 yoshgacha",
@@ -980,7 +1055,22 @@ uz:{
  drqEmpty:"Kelgusi tashriflar yo'q. 'Homiladorlik' bo'limida tashrif rejalashtiring.",
  ciTextLbl:"Hafta qanday o'tdi?",ciTextPh:"Biroz yozing — bu faqat siz uchun",
  sentimentCard:"Bu hafta juda og'ir bo'lganga o'xshaydi. Mutaxassis bilan gaplashishni istaysizmi?",
- sentimentBtn:"Mutaxassis topish"
+ sentimentBtn:"Mutaxassis topish",
+ micStart:"🎤 Ovoz yozish", micStop:"⏹ To'xtatish", micListening:"Tinglayman…",
+ profilesT:"Profillar", profilesSub:"Bir qurilmada bir nechta foydalanuvchi",
+ profilesNewBtn:"+ Yangi profil", profileLogout:"Profildan chiqish",
+ profileSwitchTo:"Kirish", profileActive:"(faol)", profileDelete:"O'chirish",
+ profileConfirmDel:"Profilni o'chirasizmi? Ma'lumotlar saqlanib qoladi.",
+ photoCheckT:"Rasm orqali tekshirish", photoCheckSub:"Rasm yuklang — AI holatni baholaydi",
+ photoCheckTypeLbl:"Nima tekshirish?",
+ photoCheckTypeSkin:"Teri / toshma", photoCheckTypeStool:"Bolaning axlati",
+ photoCheckCamera:"📷 Kamera", photoCheckGallery:"🖼 Galereya",
+ photoCheckHistT:"Tekshiruvlar tarixi", photoCheckEmpty:"Hali tekshiruvlar yo'q.",
+ photoCheckOk:"Hammasi normal ko'rinadi — aniq og'ishmalar yo'q.",
+ photoCheckAtt:"Shifokorga ko'rsatgan ma'qul. Bu tashxis emas — AI shunchaki nimadir g'ayrioddiy ko'rindi.",
+ photoCheckAnalyzing:"Rasm tahlil qilinmoqda…",
+ modPhoto:["Rasm tekshiruvi","teri va axlat — AI tahlili"],
+ medFreqLbl:"×/kun"
 }};
 /* ---------------- state ---------------- */
 const S = JSON.parse(localStorage.getItem('so_state')||'null') || {
@@ -992,9 +1082,14 @@ const S = JSON.parse(localStorage.getItem('so_state')||'null') || {
   birthPrep:{courses:false,breathing:false,specialist:false},
   visitPhotos:{}, checkinTexts:[]
 };
-['meds','cycles','scrHistory','children','checkinTexts'].forEach(k=>{ if(!S[k])S[k]=[]; });
+['meds','cycles','scrHistory','children','checkinTexts','photoChecks'].forEach(k=>{ if(!S[k])S[k]=[]; });
 ['remDone','visitSt','chat','specRates','visitPhotos'].forEach(k=>{ if(!S[k])S[k]={}; });
+if(!S.allProfiles)S.allProfiles=[];
+if(!S.activeProfileId)S.activeProfileId=null;
+if(!S.remDone.meds)S.remDone.meds={};
 if(!S.cycLen)S.cycLen=28;
+/* migrate string meds → object meds */
+S.meds=S.meds.map(m=>typeof m==='string'?{name:m,freq:1,times:[]}:m);
 if(!S.postpartum)S.postpartum={birthType:'',interventions:[],compsDuring:[],compsAfter:[],compsAfterOther:''};
 if(!S.birthPrep)S.birthPrep={courses:false,breathing:false,specialist:false};
 if(S.activeChild===undefined)S.activeChild=0;
@@ -1053,6 +1148,8 @@ function go(v){
   if(v==='trend')renderTrend();
   if(v==='chat')renderChat();
   if(v==='spec')renderSpec();
+  if(v==='profiles')renderProfiles();
+  if(v==='photo'){renderPhotoHistory();initPhotoTypeRow();}
 }
 
 /* ---------------- onboarding ---------------- */
@@ -1234,11 +1331,23 @@ function wombSVG(w){
   <ellipse cx="80" cy="55" rx="34" ry="18" fill="#fff" opacity=".18"/>
 </svg>`;
 }
+const WEEK_IMAGES={6:'week-06',10:'week-10',14:'week-14',18:'week-18',22:'week-22',27:'week-27',32:'week-32',36:'week-36',42:'week-42'};
+function imageForWeek(w){
+  let best=null; for(const k of Object.keys(WEEK_IMAGES)){if(w>=+k)best=WEEK_IMAGES[k];}
+  return best;
+}
 function renderPreg(){
   const p=S.profile; if(!p)return;
   const w=p.stage==='preg'?p.week:12;
   document.getElementById('wkNum').textContent=w;
   document.getElementById('womb').innerHTML=wombSVG(w);
+  /* fruit size image alongside womb */
+  const imgFile=imageForWeek(w);
+  const sizeImg=document.getElementById('wkSizeImg');
+  if(sizeImg){
+    sizeImg.style.display=imgFile?'block':'none';
+    if(imgFile)sizeImg.src=`assets/pregnancy-week-images/${imgFile}.svg`;
+  }
   document.getElementById('wkFruit').textContent=L().fruit(fruitFor(w));
   const sz=sizeFor(w);
   document.getElementById('wkSize').textContent=L().sizeTxt(sz[0],sz[1].replace('кг',L().kg).replace(/г$/,L().g));
@@ -1262,8 +1371,11 @@ function renderPreg(){
       <div class="t-text">${it}</div></div>`;
   }).join('');
 
-  document.getElementById('medList').innerHTML=S.meds.map((m,i)=>
-    `<div class="row"><div class="r-main">💊 ${esc(m)}</div><button class="mini" onclick="delMed(${i})">✕</button></div>`).join('');
+  document.getElementById('medList').innerHTML=S.meds.map((m,i)=>{
+    const name=typeof m==='string'?m:m.name;
+    const freq=typeof m==='object'&&m.freq?m.freq:1;
+    return `<div class="row"><div><div class="r-main">💊 ${esc(name)}</div><div class="r-sub">${freq} ${L().medFreqLbl}</div></div><button class="mini" onclick="delMed(${i})">✕</button></div>`;
+  }).join('');
 
   renderRems(p,w);
 
@@ -1281,10 +1393,12 @@ function renderPreg(){
       <div class="wk">${v}<br>${L().wkShort}</div>
       <div style="flex:1">
         <p style="margin:0">${L().visitTxt['v'+v]}${i===nextIdx?`<span class="badge">${L().nextV}</span>`:''}</p>
-        <button class="mini" style="margin-top:6px;font-size:.72rem" onclick="attachVisitPhoto(${v})">
-          ${hasPhoto?L().photoAttachedLbl:L().photoAttachLbl}
-        </button>
-        ${hasPhoto?`<br><img src="${S.visitPhotos[v]}" style="max-width:80px;border-radius:8px;margin-top:4px">`:``}
+        <div id="visitPhoto_${v}">
+          <button class="mini" style="margin-top:6px;font-size:.72rem" onclick="attachVisitPhoto(${v})">
+            ${hasPhoto?L().photoAttachedLbl:L().photoAttachLbl}
+          </button>
+          ${hasPhoto?`<br><img src="${S.visitPhotos[v]}" style="max-width:80px;border-radius:8px;margin-top:4px">`:``}
+        </div>
       </div>
       <div class="vbtns">
         <button class="mini ${st==='att'?'done':''}" onclick="setVisit(${v},'att')">${st==='att'?'✓ '+L().vAtt:L().vAtt}</button>
@@ -1297,27 +1411,58 @@ function renderRems(p,w){
   const rw=REM[S.lang].w(w), rd=REM[S.lang].d(p);
   const dayKey=new Date().toDateString();
   S.remDone['w'+w]=S.remDone['w'+w]||{};
-  if(!S.remDone.day||S.remDone.day!==dayKey){S.remDone.day=dayKey;S.remDone.d={};}
+  if(!S.remDone.day||S.remDone.day!==dayKey){S.remDone.day=dayKey;S.remDone.d={};S.remDone.meds={};}
+  if(!S.remDone.meds)S.remDone.meds={};
   document.getElementById('remWeekly').innerHTML=rw.map((t,i)=>{
     const done=!!S.remDone['w'+w][i];
     return `<div class="task ${done?'done':''}"><button class="tick" onclick="tickRem('w${w}',${i})">✓</button><div><div class="t-when">📅</div><div class="t-text">${t}</div></div></div>`;
   }).join('');
-  document.getElementById('remDaily').innerHTML=rd.map((t,i)=>{
+  /* base daily reminders */
+  let dailyHtml=rd.map((t,i)=>{
     const done=!!S.remDone.d[i];
     return `<div class="task ${done?'done':''}"><button class="tick" onclick="tickRem('d',${i})">✓</button><div><div class="t-when">☀️</div><div class="t-text">${t}</div></div></div>`;
   }).join('');
+  /* medication reminders — one tick per dose */
+  S.meds.forEach((m,mi)=>{
+    const name=typeof m==='string'?m:m.name;
+    const freq=typeof m==='object'&&m.freq?m.freq:1;
+    for(let fi=0;fi<freq;fi++){
+      const key=`${dayKey}_${mi}_${fi}`;
+      const done=!!S.remDone.meds[key];
+      const label=freq>1?`${name} (приём ${fi+1}/${freq})`:`💊 ${name}`;
+      dailyHtml+=`<div class="task ${done?'done':''}"><button class="tick" onclick="tickMedRem(${JSON.stringify(key)})">✓</button><div><div class="t-when">💊</div><div class="t-text">${esc(label)}</div></div></div>`;
+    }
+  });
+  document.getElementById('remDaily').innerHTML=dailyHtml;
 }
 function tickRem(k,i){ const o=k==='d'?S.remDone.d:S.remDone[k]; o[i]=!o[i]; save(); renderPreg(); }
+function tickMedRem(key){ S.remDone.meds[key]=!S.remDone.meds[key]; save(); renderPreg(); }
 function toggleTask(key,i){ S.tasks[key][i]=!S.tasks[key][i]; save(); renderPreg(); }
 function addMed(){
-  const v=document.getElementById('medIn').value.trim(); if(!v)return;
-  S.meds.push(v); document.getElementById('medIn').value=''; save(); renderPreg();
+  const name=document.getElementById('medIn').value.trim(); if(!name)return;
+  const freq=Math.min(6,Math.max(1,+document.getElementById('medFreq').value||1));
+  S.meds.push({name,freq,times:[]});
+  document.getElementById('medIn').value=''; save(); renderPreg();
 }
 function delMed(i){ S.meds.splice(i,1); save(); renderPreg(); }
 function setVisit(v,st){ S.visitSt[v]=S.visitSt[v]===st?'':st; save(); renderPreg(); }
 function attachVisitPhoto(wk){
+  /* show inline choice panel; buttons call pickPhoto() */
+  const container=document.getElementById('visitPhoto_'+wk);
+  if(container){
+    container.innerHTML=`<div class="photo-actions" style="margin-top:6px">
+      <button class="mini" onclick="pickPhoto(${wk},'camera')" data-i18n="photoCheckCamera">📷 Камера</button>
+      <button class="mini" onclick="pickPhoto(${wk},'gallery')" data-i18n="photoCheckGallery">🖼 Галерея</button>
+    </div>`;
+    applyLang();
+  } else {
+    pickPhoto(wk,'gallery');
+  }
+}
+function pickPhoto(wk,source){
   const inp=document.createElement('input');
-  inp.type='file'; inp.accept='image/*'; inp.capture='environment';
+  inp.type='file'; inp.accept='image/*';
+  if(source==='camera')inp.capture='environment';
   inp.onchange=()=>{
     const f=inp.files[0]; if(!f)return;
     const r=new FileReader();
@@ -1968,6 +2113,7 @@ function renderHome(){
   const active = preg||p.stage==='plan' ? ['preg','🌸','var(--anor-soft)',L().modPreg] : ['baby','🍼','var(--rishtan-soft)',L().modBaby];
   const mods=[
     active,
+    ['photo','📸','var(--rishtan-soft)',L().modPhoto],
     ['trend','🔥','var(--saffron-soft)',L().modTrend],
     ['chat','💬','var(--rishtan-soft)',L().modChat],
     ['spec','🩺','var(--anor-soft)',L().modSpec],
@@ -2087,12 +2233,198 @@ function renderSpec(){
 }
 function rateSpec(id,v){ S.specRates[id]=v; save(); renderSpec(); }
 
+/* =========================================================
+   PROFILES — multi-user on same device
+========================================================= */
+function renderProfiles(){
+  const list=document.getElementById('profilesList');
+  if(!list)return;
+  if(!S.allProfiles.length&&S.profile){
+    /* seed with current profile if never saved */
+    S.allProfiles=[{id:'p0',snapshot:S.profile}];
+    S.activeProfileId='p0'; save();
+  }
+  if(!S.allProfiles.length){
+    list.innerHTML=`<div class="week-note" style="padding:8px 0">Нет сохранённых профилей.</div>`;
+    return;
+  }
+  list.innerHTML=S.allProfiles.map((pr,i)=>{
+    const isActive=pr.id===S.activeProfileId;
+    const name=(pr.snapshot&&pr.snapshot.name)||('Профиль '+(i+1));
+    return `<div class="row">
+      <div><div class="r-main">${esc(name)}${isActive?` <span style="color:var(--ok);font-size:.78rem">${L().profileActive}</span>`:''}</div></div>
+      <div style="display:flex;gap:6px">
+        ${!isActive?`<button class="mini" onclick="loginProfile('${pr.id}')">${L().profileSwitchTo}</button>`:''}
+        <button class="mini" onclick="deleteProfile('${pr.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function logout(){
+  /* save current profile snapshot then clear active profile */
+  if(S.profile){
+    const idx=S.allProfiles.findIndex(p=>p.id===S.activeProfileId);
+    const snap={id:S.activeProfileId||'p0',snapshot:S.profile};
+    if(idx>=0)S.allProfiles[idx]=snap; else S.allProfiles.push(snap);
+    if(!S.activeProfileId)S.activeProfileId=snap.id;
+  }
+  S.profile=null; save();
+  document.querySelector('nav').style.display='none';
+  go('onb1');
+}
+function addProfile(){
+  /* save current, then start fresh onboarding */
+  if(S.profile){
+    const id=S.activeProfileId||('p'+Date.now());
+    const idx=S.allProfiles.findIndex(p=>p.id===id);
+    const snap={id,snapshot:JSON.parse(JSON.stringify(S.profile))};
+    if(idx>=0)S.allProfiles[idx]=snap; else S.allProfiles.push(snap);
+    S.activeProfileId=id;
+  }
+  S.profile=null; save();
+  document.querySelector('nav').style.display='none';
+  go('onb1');
+}
+function loginProfile(id){
+  /* save current, load target */
+  if(S.profile){
+    const curId=S.activeProfileId||('p'+Date.now());
+    const idx=S.allProfiles.findIndex(p=>p.id===curId);
+    const snap={id:curId,snapshot:JSON.parse(JSON.stringify(S.profile))};
+    if(idx>=0)S.allProfiles[idx]=snap; else S.allProfiles.push(snap);
+  }
+  const target=S.allProfiles.find(p=>p.id===id);
+  if(target&&target.snapshot){
+    S.profile=target.snapshot;
+    S.activeProfileId=id;
+    save(); go('home');
+  }
+}
+function deleteProfile(id){
+  if(!confirm(L().profileConfirmDel))return;
+  S.allProfiles=S.allProfiles.filter(p=>p.id!==id);
+  if(S.activeProfileId===id)S.activeProfileId=S.allProfiles[0]&&S.allProfiles[0].id||null;
+  save(); renderProfiles();
+}
+
+/* =========================================================
+   PHOTO CHECK — AI symptom photo analysis (mock)
+========================================================= */
+function initPhotoTypeRow(){
+  const row=document.getElementById('photoTypeRow');
+  if(!row||row._inited)return;
+  row._inited=true;
+  row.addEventListener('click',e=>{
+    const b=e.target.closest('.chip'); if(!b)return;
+    row.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+    b.classList.add('on');
+  });
+}
+function startPhotoCheck(source){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  if(source==='camera')inp.capture='environment';
+  inp.onchange=()=>{
+    const f=inp.files[0]; if(!f)return;
+    const typeChip=document.querySelector('#photoTypeRow .chip.on');
+    const type=typeChip?typeChip.dataset.v:'skin';
+    const resultEl=document.getElementById('photoResult');
+    if(resultEl)resultEl.innerHTML=`<div class="week-note">${L().photoCheckAnalyzing}</div>`;
+    const r=new FileReader();
+    r.onload=e=>{
+      const dataUrl=e.target.result;
+      analyzePhoto(dataUrl,type);
+    };
+    r.readAsDataURL(f);
+  };
+  inp.click();
+}
+function analyzePhoto(dataUrl,type){
+  /* Mock AI assessment: rule-based placeholder with same input/output contract as LLM */
+  setTimeout(()=>{
+    const ok=Math.random()>0.35; /* 65% "looks ok" in demo */
+    const result={ok,type,date:new Date().toLocaleDateString(S.lang==='ru'?'ru-RU':'uz-UZ'),thumb:dataUrl};
+    S.photoChecks.unshift(result);
+    if(S.photoChecks.length>20)S.photoChecks.length=20;
+    save();
+    const resultEl=document.getElementById('photoResult');
+    if(resultEl){
+      resultEl.innerHTML=`
+        <span class="photo-result-badge ${ok?'ok':'att'}">${ok?'✓ Норма':'⚠ Обратите внимание'}</span>
+        <p class="week-note">${ok?L().photoCheckOk:L().photoCheckAtt}</p>
+        <img src="${dataUrl}" style="max-width:100%;border-radius:12px;margin-top:8px">
+      `;
+    }
+    renderPhotoHistory();
+  }, 1200);
+}
+function renderPhotoHistory(){
+  const el=document.getElementById('photoHistList');
+  if(!el)return;
+  if(!S.photoChecks.length){
+    el.innerHTML=`<div class="week-note" style="padding:8px 0">${L().photoCheckEmpty}</div>`;
+    return;
+  }
+  el.innerHTML=S.photoChecks.slice(0,8).map(c=>`
+    <div class="row">
+      <div><div class="r-main">${c.type==='skin'?L().photoCheckTypeSkin:L().photoCheckTypeStool}</div>
+      <div class="r-sub">${c.date}</div></div>
+      <span class="photo-result-badge ${c.ok?'ok':'att'}" style="font-size:.7rem">${c.ok?'✓ OK':'⚠'}</span>
+    </div>`).join('');
+}
+
+/* =========================================================
+   VOICE INPUT — Web Speech API
+========================================================= */
+let _recog=null, _recogActive=false;
+function toggleVoice(){
+  if(_recogActive){stopVoice();return;}
+  startVoice();
+}
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    document.getElementById('voiceStatus').textContent='Голосовой ввод не поддерживается браузером.';
+    return;
+  }
+  _recog=new SR();
+  _recog.lang=S.lang==='ru'?'ru-RU':'uz-UZ';
+  _recog.interimResults=true;
+  _recog.continuous=false;
+  _recogActive=true;
+  const btn=document.getElementById('micBtn');
+  const lbl=document.getElementById('micLabel');
+  const status=document.getElementById('voiceStatus');
+  if(btn)btn.classList.add('active');
+  if(lbl)lbl.textContent=L().micStop.replace('⏹ ','');
+  if(status)status.textContent=L().micListening;
+  _recog.onresult=e=>{
+    const transcript=Array.from(e.results).map(r=>r[0].transcript).join('');
+    const ta=document.getElementById('ciText');
+    if(ta)ta.value=transcript;
+  };
+  _recog.onend=()=>stopVoice(false);
+  _recog.onerror=()=>stopVoice(false);
+  _recog.start();
+}
+function stopVoice(manual=true){
+  _recogActive=false;
+  if(_recog&&manual){try{_recog.stop();}catch(e){}}
+  _recog=null;
+  const btn=document.getElementById('micBtn');
+  const lbl=document.getElementById('micLabel');
+  const status=document.getElementById('voiceStatus');
+  if(btn)btn.classList.remove('active');
+  if(lbl)lbl.setAttribute('data-i18n','micStart'),lbl.textContent=L().micStart.replace('🎤 ','');
+  if(status)status.textContent='';
+}
+
 /* ---------------- boot ---------------- */
 function renderAll(){
   applyLang();
   if(!S.profile)return;
   renderHome();
-  const r={home:renderHome,preg:renderPreg,baby:renderBaby,scr:renderScrHist,mama:renderMama,trend:renderTrend,chat:renderChat,spec:renderSpec}[curView];
+  const r={home:renderHome,preg:renderPreg,baby:renderBaby,scr:renderScrHist,mama:renderMama,trend:renderTrend,chat:renderChat,spec:renderSpec,profiles:renderProfiles,photo:()=>{renderPhotoHistory();initPhotoTypeRow();}}[curView];
   if(r)r();
 }
 applyLang();
